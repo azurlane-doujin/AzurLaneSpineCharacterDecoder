@@ -1,7 +1,6 @@
 package com.decoder.jacky;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.utils.*;
 
 import java.io.EOFException;
@@ -28,33 +27,32 @@ public class SpineCharactDecoder {
     private static final int CURVE_STEPPED = 1;
     private static final int CURVE_BEZIER = 2;
 
-    final String TransformMode[] = new String[]{
+    private final String[] TransformMode = new String[]{
             "normal",
             "onlyTranslation",
             "noRotationOrReflection",
             "noScale",
             "noScaleOrReflection"};
 
-    final String BlendMode[] = new String[]{
+    private final String[] BlendMode = new String[]{
             "normal",
             "additive",
             "multiply",
             "screen",
     };
-    final String PositionMode[] = new String[]{"fixed",
+    private final String[] PositionMode = new String[]{"fixed",
             "percent"};
-    final String SpacingMode[] = new String[]{
+    private final String[] SpacingMode = new String[]{
             "length",
             "fixed",
             "percent"};
-    final String RotateMode[] = new String[]
-            {
-                    "tangent",
-                    "chain",
-                    "chainScale"
-            };
+    private final String[] RotateMode = new String[]{
+            "tangent",
+            "chain",
+            "chainScale"
+    };
 
-    final String AttachmentType[] = new String[]{
+    private final String[] AttachmentType = new String[]{
             "region",
             "boundingbox",
             "mesh",
@@ -66,10 +64,13 @@ public class SpineCharactDecoder {
     private JsonBuilder builder = new JsonBuilder();
     private JsonBuilder.Dict basicDict = builder.setBasicTypeAsDict();
 
-    public String name;
+    private Map<Integer, String> slotsName;
 
-    public String decoder(FileHandle binaryFile) {
-        name=binaryFile.nameWithoutExtension().replace(".skel","");
+
+    String name;
+
+    String decoder(FileHandle binaryFile) {
+        name = binaryFile.nameWithoutExtension().replace(".skel", "");
         DataInput input = new DataInput(binaryFile.read(512)) {
             private char[] chars = new char[32];
 
@@ -140,7 +141,7 @@ public class SpineCharactDecoder {
             basicDict.insert(skeleton);
 
             Map<Integer, String> bonesName = new HashMap<Integer, String>();
-            Map<Integer, String> slotsName = new HashMap<Integer, String>();
+            slotsName = new HashMap<Integer, String>();
 
 
             JsonBuilder.List Bones = basicDict.addKeyList("bones");
@@ -340,6 +341,47 @@ public class SpineCharactDecoder {
             }
             basicDict.insert(paths);
 
+            JsonBuilder.Dict skins = basicDict.addKeyDict("skins");
+            {
+                JsonBuilder.Dict defaultSkin = skins.addKeyDict("default");
+                readSkin(input, defaultSkin, nonessential);
+                if (defaultSkin != null)
+                    skins.insert(defaultSkin);
+
+                for (int i = 0, n = input.readInt(true); i < n; i++) {
+                    String name = input.readString();
+                    JsonBuilder.Dict skin = skins.addKeyDict(name);
+                    readSkin(input, skin, nonessential);
+                    if (skin != null) {
+                        skins.insert(skin);
+                    }
+                }
+            }
+            basicDict.insert(skins);
+
+          // JsonBuilder.Dict events = basicDict.addKeyDict("events");
+          // {
+          //     for (int i = 0, n = input.readInt(true); i < n; i++) {
+          //         String name = input.readString();
+          //         JsonBuilder.Dict event = events.addKeyDict(name);
+          //         {
+          //             event.addKeyValue("int", input.readInt(false));
+          //             event.addKeyValue("float", input.readFloat());
+          //             String string = input.readString();
+          //             event.addKeyValue("string", string != null ? string : "null");
+
+          //         }
+          //         events.insert(event);
+          //     }
+          // }
+          // basicDict.insert(events);
+
+           // JsonBuilder.Dict animations = basicDict.addKeyDict("animations");
+           // {
+           //     for (int i = 0, n = input.readInt(true); i < n; i++)
+           //         readAnimation(input, input.readString(), animations);
+           // }
+           // basicDict.insert(animations);
 
             builder.insert(basicDict);
         } catch (IOException info) {
@@ -349,219 +391,205 @@ public class SpineCharactDecoder {
 
     }
 
-    public void clear() {
+    void clear() {
         builder = new JsonBuilder();
     }
 
-    private JsonBuilder.Dict readSkin(DataInput input, JsonBuilder.Dict basicDict, String skinName, boolean nonessential) throws IOException {
+    private void readSkin(DataInput input, JsonBuilder.Dict skin, boolean nonessential) throws IOException {
         int slotCount = input.readInt(true);
-        if (slotCount == 0) return null;
-        String skin_Name = skinName;
-        JsonBuilder.Dict skin = basicDict.addKeyDict("nn");
+        if (slotCount == 0) return;
+
         for (int i = 0; i < slotCount; i++) {
-            int slotIndex = input.readInt(true);
+            input.readInt(true);
+
             for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
-                String name = input.readString();
-                JsonBuilder.Dict attachment = readAttachment(input, skin, slotIndex, name, nonessential);
-                if (attachment != null) {
-                    skin.addKeyDict("attachment");
-                    skin.insert(attachment);
-                }
+                String attachName = input.readString();
+
+                JsonBuilder.Dict attach = skin.addKeyDict(attachName);
+
+                readAttachment(input, attach, attachName, nonessential);
+
+                skin.insert(attach);
             }
+
+
         }
-        return skin;
     }
 
-    private JsonBuilder.Dict readAttachment(DataInput input, JsonBuilder.Dict skin, int slotIndex, String attachmentName,
-                                            boolean nonessential) throws IOException {
-        // float scale = this.scale;
+    private void readAttachment(DataInput input, JsonBuilder.Dict attachments, String attachmentName, boolean nonessential) throws IOException {
 
         String name = input.readString();
         if (name == null) name = attachmentName;
 
-        int type = input.readByte();
-        switch (type) {
-            case 0: {
-                String path = input.readString();
-                float rotation = input.readFloat();
-                float x = input.readFloat();
-                float y = input.readFloat();
-                float scaleX = input.readFloat();
-                float scaleY = input.readFloat();
-                float width = input.readFloat();
-                float height = input.readFloat();
-                int color = input.readInt();
+        JsonBuilder.Dict attach = attachments.addKeyDict(name);
+        {
+            int type = input.readByte();
+            String typeName = AttachmentType[type];
 
-                if (path == null) path = name;
-                //    RegionAttachment region = attachmentLoader.newRegionAttachment(skin, name, path);
-                //    if (region == null) return null;
-                //    region.setPath(path);
-                //    region.setX(x * scale);
-                //    region.setY(y * scale);
-                //    region.setScaleX(scaleX);
-                //    region.setScaleY(scaleY);
-                //    region.setRotation(rotation);
-                //    region.setWidth(width * scale);
-                //    region.setHeight(height * scale);
-                //    Color.rgba8888ToColor(region.getColor(), color);
-                //    region.updateOffset();
-                //  return region;
-            }
-            case 1: {
-                int vertexCount = input.readInt(true);
-                //SkeletonBinary.Vertices vertices = readVertices(input, vertexCount);
-                int color = nonessential ? input.readInt() : 0;
+            attach.addKeyValue("type", typeName);
 
-                //  BoundingBoxAttachment box = attachmentLoader.newBoundingBoxAttachment(skin, name);
-                //  if (box == null) return null;
-                //  box.setWorldVerticesLength(vertexCount << 1);
-                //  box.setVertices(vertices.vertices);
-                //  box.setBones(vertices.bones);
-                //  if (nonessential) Color.rgba8888ToColor(box.getColor(), color);
-                //  return box;
-            }
-            case 2: {
-                String path = input.readString();
-                int color = input.readInt();
-                int vertexCount = input.readInt(true);
-                float[] uvs = readFloatArray(input, vertexCount << 1, 1);
-                short[] triangles = readShortArray(input);
-                //  SkeletonBinary.Vertices vertices = readVertices(input, vertexCount);
-                int hullLength = input.readInt(true);
-                short[] edges = null;
-                float width = 0, height = 0;
-                if (nonessential) {
-                    edges = readShortArray(input);
-                    width = input.readFloat();
-                    height = input.readFloat();
+            switch (type) {
+                case 0: {
+                    attach.addKeyValue("path", input.readString());
+                    attach.addKeyValue("rotation", input.readFloat());
+                    attach.addKeyValue("x", input.readFloat());
+                    attach.addKeyValue("y", input.readFloat());
+                    attach.addKeyValue("scaleX", input.readFloat());
+                    attach.addKeyValue("scaleY", input.readFloat());
+                    attach.addKeyValue("width", input.readFloat());
+                    attach.addKeyValue("height", input.readFloat());
+                    attach.addKeyValue("color", Integer.toHexString(input.readInt()));
+                    break;
                 }
-
-                if (path == null) path = name;
-                // MeshAttachment mesh = attachmentLoader.newMeshAttachment(skin, name, path);
-                // if (mesh == null) return null;
-                // mesh.setPath(path);
-                // Color.rgba8888ToColor(mesh.getColor(), color);
-                // mesh.setBones(vertices.bones);
-                // mesh.setVertices(vertices.vertices);
-                // mesh.setWorldVerticesLength(vertexCount << 1);
-                // mesh.setTriangles(triangles);
-                // mesh.setRegionUVs(uvs);
-                // mesh.updateUVs();
-                // mesh.setHullLength(hullLength << 1);
-                // if (nonessential) {
-                //     mesh.setEdges(edges);
-                //     mesh.setWidth(width * scale);
-                //     mesh.setHeight(height * scale);
-                // }
-                // return mesh;
-            }
-            case 3: {
-                String path = input.readString();
-                int color = input.readInt();
-                String skinName = input.readString();
-                String parent = input.readString();
-                boolean inheritDeform = input.readBoolean();
-                float width = 0, height = 0;
-                if (nonessential) {
-                    width = input.readFloat();
-                    height = input.readFloat();
+                case 1: {
+                    int vertexCount = input.readInt(true);
+                    attach.addKeyValue("vertexCount", vertexCount);
+                    JsonBuilder.List vertices = attach.addKeyList("vertices");
+                    readVertices(input, vertexCount, vertices);
+                    attach.insert(vertices);
+                    attach.addKeyValue("color", nonessential ? input.readInt() : 0);
+                    break;
                 }
+                case 2: {
+                    String path = input.readString();
+                    if (path == null) path = name;
+                    int color = input.readInt();
+                    int vertexCount = input.readInt(true);
 
-                if (path == null) path = name;
-                //  MeshAttachment mesh = attachmentLoader.newMeshAttachment(skin, name, path);
-                //  if (mesh == null) return null;
-                //  mesh.setPath(path);
-                //  Color.rgba8888ToColor(mesh.getColor(), color);
-                //  mesh.setInheritDeform(inheritDeform);
-                //  if (nonessential) {
-                //      mesh.setWidth(width * scale);
-                //      mesh.setHeight(height * scale);
-                //  }
-                //  linkedMeshes.add(new SkeletonJson.LinkedMesh(mesh, skinName, slotIndex, parent));
-                //  return mesh;
-            }
-            case 4: {
-                boolean closed = input.readBoolean();
-                boolean constantSpeed = input.readBoolean();
-                int vertexCount = input.readInt(true);
-                //   SkeletonBinary.Vertices vertices = readVertices(input, vertexCount);
-                float[] lengths = new float[vertexCount / 3];
-                for (int i = 0, n = lengths.length; i < n; i++)
-                    lengths[i] = input.readFloat();
-                int color = nonessential ? input.readInt() : 0;
+                    attach.addKeyValue("path", path);
+                    attach.addKeyValue("color", Integer.toHexString(color));
+                    attach.addKeyValue("vertexCount", vertexCount);
 
-                //  PathAttachment path = attachmentLoader.newPathAttachment(skin, name);
-                //  if (path == null) return null;
-                //  path.setClosed(closed);
-                //  path.setConstantSpeed(constantSpeed);
-                //  path.setWorldVerticesLength(vertexCount << 1);
-                //  path.setVertices(vertices.vertices);
-                //  path.setBones(vertices.bones);
-                //  path.setLengths(lengths);
-                //  if (nonessential) Color.rgba8888ToColor(path.getColor(), color);
-                //  return path;
-            }
-            case 5: {
-                float rotation = input.readFloat();
-                float x = input.readFloat();
-                float y = input.readFloat();
-                int color = nonessential ? input.readInt() : 0;
+                    JsonBuilder.List uvs = attach.addKeyList("uvs");
+                    readFloatArray(input, vertexCount << 1, 1, uvs);
+                    attach.insert(uvs);
 
-                //  PointAttachment point = attachmentLoader.newPointAttachment(skin, name);
-                //  if (point == null) return null;
-                //  point.setX(x * scale);
-                //  point.setY(y * scale);
-                //  point.setRotation(rotation);
-                //  if (nonessential) Color.rgba8888ToColor(point.getColor(), color);
-                //  return point;
-            }
-            case 6: {
-                int endSlotIndex = input.readInt(true);
-                int vertexCount = input.readInt(true);
-                //      SkeletonBinary.Vertices vertices = readVertices(input, vertexCount);
-                int color = nonessential ? input.readInt() : 0;
+                    JsonBuilder.List triangles = attach.addKeyList("triangles");
+                    readShortArray(input, triangles);
+                    attach.insert(triangles);
 
-                //  ClippingAttachment clip = attachmentLoader.newClippingAttachment(skin, name);
-                //  if (clip == null) return null;
-                //  clip.setEndSlot(skeletonData.slots.get(endSlotIndex));
-                //  clip.setWorldVerticesLength(vertexCount << 1);
-                //  clip.setVertices(vertices.vertices);
-                //  clip.setBones(vertices.bones);
-                //  if (nonessential) Color.rgba8888ToColor(clip.getColor(), color);
-                //  return clip;
+                    JsonBuilder.List vertices = attach.addKeyList("vertices");
+                    readVertices(input, vertexCount, vertices);
+                    attach.insert(vertices);
+
+                    attach.addKeyValue("hullLength", input.readInt(true));
+                    JsonBuilder.List edges = attach.addKeyList("edges");
+                    float width = 0, height = 0;
+                    if (nonessential) {
+                        readShortArray(input, edges);
+                        width = input.readFloat();
+                        height = input.readFloat();
+                    }
+                    attach.insert(edges);
+                    attach.addKeyValue("width", width);
+                    attach.addKeyValue("height", height);
+
+                    break;
+                }
+                case 3: {
+                    String path = input.readString();
+                    if (path == null) path = name;
+                    int color = input.readInt();
+                    String skinName = input.readString();
+                    String parent = input.readString();
+                    boolean inheritDeform = input.readBoolean();
+                    float width = 0, height = 0;
+                    if (nonessential) {
+                        width = input.readFloat();
+                        height = input.readFloat();
+                    }
+
+                    attach.addKeyValue("path", path);
+                    attach.addKeyValue("color", Integer.toHexString(color));
+                    attach.addKeyValue("skin", skinName);
+                    attach.addKeyValue("parent", parent);
+                    attach.addKeyValue("deform", inheritDeform);
+                    attach.addKeyValue("width", width);
+                    attach.addKeyValue("heigh", height);
+
+                    break;
+                }
+                case 4: {
+                    boolean closed = input.readBoolean();
+                    boolean constantSpeed = input.readBoolean();
+                    int vertexCount = input.readInt(true);
+
+                    attach.addKeyValue("closed", closed);
+                    attach.addKeyValue("constantSpeed", constantSpeed);
+                    attach.addKeyValue("vertexCount", vertexCount);
+
+
+                    JsonBuilder.List vertices = attach.addKeyList("vertices");
+                    readVertices(input, vertexCount, vertices);
+                    attach.insert(vertices);
+
+                    float[] lengths = new float[vertexCount / 3];
+                    JsonBuilder.List length = attach.addKeyList("lengths");
+                    for (int i = 0, n = lengths.length; i < n; i++) {
+                        lengths[i] = input.readFloat();
+                        length.addValue(lengths[i]);
+                    }
+                    attach.insert(length);
+                    int color = nonessential ? input.readInt() : 0;
+                    attach.addKeyValue("color", Integer.toHexString(color));
+
+                    break;
+                }
+                case 5: {
+                    float rotation = input.readFloat();
+                    float x = input.readFloat();
+                    float y = input.readFloat();
+                    int color = nonessential ? input.readInt() : 0;
+
+                    attach.addKeyValue("x", x);
+                    attach.addKeyValue("y", y);
+                    attach.addKeyValue("rotation", rotation);
+                    attach.addKeyValue("color", Integer.toHexString(color));
+
+                    break;
+                }
+                case 6: {
+                    int endSlotIndex = input.readInt(true);
+                    int vertexCount = input.readInt(true);
+
+                    attach.addKeyValue("end", slotsName.get(endSlotIndex));
+                    attach.addKeyValue("vertexCount", vertexCount);
+
+                    JsonBuilder.List vertices = attach.addKeyList("vertices");
+                    readVertices(input, vertexCount, vertices);
+                    attach.insert(vertices);
+                    int color = nonessential ? input.readInt() : 0;
+
+                    attach.addKeyValue("color", Integer.toHexString(color));
+
+                    break;
+                }
             }
         }
-        return null;
+        attachments.insert(attach);
     }
 
-    private JsonBuilder.List readVertices(DataInput input, int vertexCount, JsonBuilder.Dict basicDict) throws IOException {
+    private void readVertices(DataInput input, int vertexCount, JsonBuilder.List vertices) throws IOException {
         int verticesLength = vertexCount << 1;
-        float scale = 1f;
-        JsonBuilder.List vertices = basicDict.addKeyList("ver");
-        //   SkeletonBinary.Vertices vertices = new SkeletonBinary.Vertices();
-        if (!input.readBoolean()) {
-            //  vertices.vertices = readFloatArray(input, verticesLength, scale);
 
-            return vertices;
+
+        if (!input.readBoolean()) {
+            readFloatArray(input, verticesLength, 1f, vertices);
+            return;
         }
-        FloatArray weights = new FloatArray(verticesLength * 3 * 3);
-        IntArray bonesArray = new IntArray(verticesLength * 3);
         for (int i = 0; i < vertexCount; i++) {
             int boneCount = input.readInt(true);
-            bonesArray.add(boneCount);
+            vertices.addValue(boneCount);
             for (int ii = 0; ii < boneCount; ii++) {
-                bonesArray.add(input.readInt(true));
-                weights.add(input.readFloat() * scale);
-                weights.add(input.readFloat() * scale);
-                weights.add(input.readFloat());
+                vertices.addValue(input.readInt(true));
+                vertices.addValue(input.readFloat());
+                vertices.addValue(input.readFloat());
+                vertices.addValue(input.readFloat());
             }
         }
-        vertices.addValue(weights.toArray());
-        vertices.addValue(bonesArray.toArray());
-        return vertices;
     }
 
-    private float[] readFloatArray(DataInput input, int n, float scale) throws IOException {
+    private void readFloatArray(DataInput input, int n, float scale, JsonBuilder.List floatArray) throws IOException {
         float[] array = new float[n];
         if (scale == 1) {
             for (int i = 0; i < n; i++)
@@ -570,18 +598,26 @@ public class SpineCharactDecoder {
             for (int i = 0; i < n; i++)
                 array[i] = input.readFloat() * scale;
         }
-        return array;
+        for (float v : array) {
+            floatArray.addValue(v);
+        }
+
     }
 
-    private short[] readShortArray(DataInput input) throws IOException {
+    private void readShortArray(DataInput input, JsonBuilder.List shortArray) throws IOException {
         int n = input.readInt(true);
         short[] array = new short[n];
         for (int i = 0; i < n; i++)
             array[i] = input.readShort();
-        return array;
+
+        for (short v :
+                array) {
+            shortArray.addValue(v);
+        }
     }
 
-    private void readAnimation(DataInput input, String name, JsonBuilder.Dict basicDict) {
+    private void readAnimation(DataInput input, String name, JsonBuilder.Dict Animations) {
+        JsonBuilder.Dict animation = Animations.addKeyDict(name);
         JsonBuilder.List timelines = basicDict.addKeyList("timmeline");
         float scale = 1f;
         float duration = 0;
@@ -851,9 +887,7 @@ public class SpineCharactDecoder {
             throw new SerializationException("Error reading skeleton file.", ex);
         }
 
-        //timelines.shrink();
-        //skeletonData.animations.add(new Animation(name, timelines, duration));
-
+        Animations.insert(animation);
     }
 
     private void readCurve(DataInput input, int frameIndex, JsonBuilder.List timeline) throws IOException {

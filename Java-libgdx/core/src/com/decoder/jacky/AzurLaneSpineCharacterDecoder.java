@@ -21,6 +21,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 	private SpineCharactDecoder decoder;
 	private int index=0;
 	private String path;
+	private boolean hasDone=false;
 
 	public AzurLaneSpineCharacterDecoder(String[] args){
         for (String arg : args) {
@@ -33,7 +34,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("WatchDog.png");
+		img = new Texture("core/assets/WatchDog.png");
 		camera=new OrthographicCamera();
         camera.setToOrtho(false);
 
@@ -45,22 +46,29 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		batch.draw(img, Gdx.graphics.getWidth()/2-img.getWidth()/2, Gdx.graphics.getHeight()/2-img.getHeight()/2);
+		batch.draw(img, Gdx.graphics.getWidth() / 2 - img.getWidth() / 2, Gdx.graphics.getHeight() / 2 - img.getHeight() / 2);
 		batch.end();
 
-		if(index>=args.size())
-		    System.exit(0);
+		if (index < args.size())
+		{
 
-		String val =decoder.decoder(Gdx.files.absolute(args.get(index)));
-		System.out.println(val);
-		System.out.println();
+			String val = decoder.decoder(Gdx.files.absolute(args.get(index)));
+			System.out.println(val);
+			System.out.println();
 
-        FileHandle output=Gdx.files.absolute(path+"/"+decoder.name+"/"+decoder.name+".json");
+			FileHandle output = Gdx.files.absolute(path + "/" + decoder.name + "/" + decoder.name + ".json");
 
-        output.writeString(val,false);
+			output.writeString(val, false);
 
-		index+=1;
-		decoder.clear();
+			index += 1;
+			decoder.clear();
+		}
+		else {
+			if (! hasDone){
+				System.out.println("Done");
+		hasDone=true;
+			}}
+
 	}
 	
 	@Override

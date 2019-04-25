@@ -5,8 +5,8 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.decoder.jacky.AzurLaneSpineCharacterDecoder;
 
 public class DesktopLauncher {
-	public static void main (String[] arg) {
+	public static void main (String[] args) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new AzurLaneSpineCharacterDecoder(), config);
+		new LwjglApplication(new AzurLaneSpineCharacterDecoder(args), config);
 	}
 }

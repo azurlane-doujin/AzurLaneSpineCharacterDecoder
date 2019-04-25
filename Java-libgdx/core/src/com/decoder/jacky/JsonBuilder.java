@@ -31,9 +31,10 @@ public class JsonBuilder {
         public void insert(List list){builder.insert(list.index,list.exitList()).append(",");}
 
         public void addKeyValue(String key, String value) {
-            if (value.equals("null"))
+            if (value==null||value.equals("null"))
                 builder.append("\"").append(key).append("\":").append("null").append(",");
-            builder.append("\"").append(key).append("\":").append("\"").append(value).append("\",");
+            else
+                builder.append("\"").append(key).append("\":").append("\"").append(value).append("\",");
         }
 
         public void addKeyValue(String key, float value) {
