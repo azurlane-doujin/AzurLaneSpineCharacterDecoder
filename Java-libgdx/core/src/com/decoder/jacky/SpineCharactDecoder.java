@@ -341,47 +341,47 @@ public class SpineCharactDecoder {
             }
             basicDict.insert(paths);
 
-            JsonBuilder.Dict skins = basicDict.addKeyDict("skins");
-            {
-                JsonBuilder.Dict defaultSkin = skins.addKeyDict("default");
-                readSkin(input, defaultSkin, nonessential);
-                if (defaultSkin != null)
-                    skins.insert(defaultSkin);
+      //     JsonBuilder.Dict skins = basicDict.addKeyDict("skins");
+      //     {
+      //         JsonBuilder.Dict defaultSkin = skins.addKeyDict("default");
+      //         readSkin(input, defaultSkin, nonessential);
+      //         if (defaultSkin != null)
+      //             skins.insert(defaultSkin);
 
-                for (int i = 0, n = input.readInt(true); i < n; i++) {
-                    String name = input.readString();
-                    JsonBuilder.Dict skin = skins.addKeyDict(name);
-                    readSkin(input, skin, nonessential);
-                    if (skin != null) {
-                        skins.insert(skin);
-                    }
-                }
-            }
-            basicDict.insert(skins);
+      //         for (int i = 0, n = input.readInt(true); i < n; i++) {
+      //             String name = input.readString();
+      //             JsonBuilder.Dict skin = skins.addKeyDict(name);
+      //             readSkin(input, skin, nonessential);
+      //             if (skin != null) {
+      //                 skins.insert(skin);
+      //             }
+      //         }
+      //     }
+      //     basicDict.insert(skins);
 
-          // JsonBuilder.Dict events = basicDict.addKeyDict("events");
-          // {
-          //     for (int i = 0, n = input.readInt(true); i < n; i++) {
-          //         String name = input.readString();
-          //         JsonBuilder.Dict event = events.addKeyDict(name);
-          //         {
-          //             event.addKeyValue("int", input.readInt(false));
-          //             event.addKeyValue("float", input.readFloat());
-          //             String string = input.readString();
-          //             event.addKeyValue("string", string != null ? string : "null");
+      //    JsonBuilder.Dict events = basicDict.addKeyDict("events");
+      //    {
+      //        for (int i = 0, n = input.readInt(true); i < n; i++) {
+      //            String name = input.readString();
+      //            JsonBuilder.Dict event = events.addKeyDict(name);
+      //            {
+      //                event.addKeyValue("int", input.readInt(false));
+      //                event.addKeyValue("float", input.readFloat());
+      //                String string = input.readString();
+      //                event.addKeyValue("string", string != null ? string : "null");
 
-          //         }
-          //         events.insert(event);
-          //     }
-          // }
-          // basicDict.insert(events);
+      //            }
+      //            events.insert(event);
+      //        }
+      //    }
+      //    basicDict.insert(events);
 
-           // JsonBuilder.Dict animations = basicDict.addKeyDict("animations");
-           // {
-           //     for (int i = 0, n = input.readInt(true); i < n; i++)
-           //         readAnimation(input, input.readString(), animations);
-           // }
-           // basicDict.insert(animations);
+      //     JsonBuilder.Dict animations = basicDict.addKeyDict("animations");
+      //    // {
+      //    //     for (int i = 0, n = input.readInt(true); i < n; i++)
+      //    //         readAnimation(input, input.readString(), animations);
+      //    // }
+      //     basicDict.insert(animations);
 
             builder.insert(basicDict);
         } catch (IOException info) {
