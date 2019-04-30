@@ -125,24 +125,4 @@ public class JsonBuilder {
 
     }
 
-    public static void main(String[] args) {
-        JsonBuilder val = new JsonBuilder();
-
-        Dict basic=val.setBasicTypeAsDict();
-
-        basic.addKeyValue("233,23","2222");
-        basic.addKeyValue("2222",1234f);
-
-        Dict value=basic.addKeyDict("233");
-
-        value.addKeyValue("333",2222);
-
-        basic.insert(value);
-
-        val.insert(basic);
-
-        System.out.println(val.toString());
-
-
-    }
 }

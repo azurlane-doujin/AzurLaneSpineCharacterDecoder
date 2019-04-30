@@ -1,8 +1,6 @@
 package com.decoder.jacky;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -20,7 +18,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 	private List<String> args = new ArrayList<String>();
 	private OrthographicCamera camera;
 
-	private SpineCharactDecoder decoder;
+	private SpineCharacterDecoder decoder;
 
 	private int index = 0;
 	private String path;
@@ -73,7 +71,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false);
 
-		decoder = new SpineCharactDecoder();
+		decoder = new SpineCharacterDecoder();
 
 		if (jsonType) {
 			JsonReader reader = new JsonReader();
@@ -135,7 +133,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 					output.writeString(val, false);
 
 					name=decoder.name;
-					decoder=new SpineCharactDecoder();
+					decoder=new SpineCharacterDecoder();
 					val=null;
 				}
 				index += 1;

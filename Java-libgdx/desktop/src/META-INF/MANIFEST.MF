@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-Class-Path: /
+Class-Path: ./
 Main-Class: com.decoder.jacky.desktop.DesktopLauncher
 
