@@ -14,3 +14,6 @@
 当背景为白色，表示正在导出
 当背景转为蓝色，表示完成
 导出位于运行目录下的output文件夹中
+
+### 这只是看板
+![看板](https://github.com/azurlane-doujin/AzurLaneSpineCharacterDecoder/blob/master/Java-libgdx/core/assets/WatchDog.png)
