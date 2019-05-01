@@ -19,9 +19,9 @@ public class SpineCharacterDecoder {
     private static final int SLOT_COLOR = 1;
     private static final int SLOT_TWO_COLOR = 2;
 
-    static public final int PATH_POSITION = 0;
-    static public final int PATH_SPACING = 1;
-    static public final int PATH_MIX = 2;
+    private static final int PATH_POSITION = 0;
+    private static final int PATH_SPACING = 1;
+    private static final int PATH_MIX = 2;
 
     static public final int CURVE_LINEAR = 0;
     private static final int CURVE_STEPPED = 1;
@@ -67,6 +67,13 @@ public class SpineCharacterDecoder {
     private Map<Integer, String> slotsName;
     private Map<Integer, String> bonesName;
     private Map<Integer, String> skinsName;
+    private Map<Integer, String> IK_Name;
+    private Map<Integer, String> transformsName;
+    private Map<Integer, String> pathsName;
+    private Map<Integer, String> eventName;
+
+    private Map<String, FloatArray> attachVertices;
+    private Map<String, String> slotAttach;
 
     String name;
 
@@ -143,6 +150,14 @@ public class SpineCharacterDecoder {
 
             bonesName = new HashMap<Integer, String>();
             slotsName = new HashMap<Integer, String>();
+            skinsName = new HashMap<Integer, String>();
+            IK_Name = new HashMap<Integer, String>();
+            transformsName = new HashMap<Integer, String>();
+            pathsName = new HashMap<Integer, String>();
+            eventName = new HashMap<Integer, String>();
+
+            attachVertices = new HashMap<String, FloatArray>();
+            slotAttach = new HashMap<String, String>();
 
 
             JsonBuilder.List Bones = basicDict.addKeyList("bones");
@@ -227,6 +242,7 @@ public class SpineCharacterDecoder {
                         slot.addKeyValue("blend", this.BlendMode[blendMode]);
 
                         slotsName.put(i, slotName);
+                        slotAttach.put(slotName, attachmentName);
                     }
                     slots.insert(slot);
                 }
@@ -256,11 +272,14 @@ public class SpineCharacterDecoder {
                         ik.addKeyValue("target", bonesName.get(input.readInt(true)));
                         ik.addKeyValue("mix", input.readFloat());
                         ik.addKeyValue("bendPositive", input.readByte());
+
+                        IK_Name.put(i, name);
                     }
                     IKs.insert(ik);
                 }
             }
             basicDict.insert(IKs);
+
 
             JsonBuilder.List transforms = basicDict.addKeyList("transform");
             {
@@ -292,11 +311,14 @@ public class SpineCharacterDecoder {
                         transform.addKeyValue("translateMix", input.readFloat());
                         transform.addKeyValue("scaleMix", input.readFloat());
                         transform.addKeyValue("shearMix", input.readFloat());
+
+                        transformsName.put(i, name);
                     }
                     transforms.insert(transform);
                 }
             }
             basicDict.insert(transforms);
+
 
             JsonBuilder.List paths = basicDict.addKeyList("path");
             {
@@ -336,29 +358,35 @@ public class SpineCharacterDecoder {
                         path.addKeyValue("rotateMix", input.readFloat());
                         path.addKeyValue("translateMix", input.readFloat());
 
+
+                        pathsName.put(i, name);
                     }
                     paths.insert(path);
                 }
             }
             basicDict.insert(paths);
 
+
             JsonBuilder.Dict skins = basicDict.addKeyDict("skins");
             {
                 JsonBuilder.Dict defaultSkin = skins.addKeyDict("default");
-                readSkin(input, defaultSkin, nonessential);
-                if (defaultSkin != null)
+                readSkin(input, defaultSkin, nonessential, 0, name);
+                if (defaultSkin != null) {
                     skins.insert(defaultSkin);
+
+                }
 
                 for (int i = 0, n = input.readInt(true); i < n; i++) {
                     String name = input.readString();
                     JsonBuilder.Dict skin = skins.addKeyDict(name);
-                    readSkin(input, skin, nonessential);
+                    readSkin(input, skin, nonessential, i + 1, name);
                     if (skin != null) {
                         skins.insert(skin);
                     }
                 }
             }
             basicDict.insert(skins);
+
 
             JsonBuilder.Dict events = basicDict.addKeyDict("events");
             {
@@ -373,9 +401,11 @@ public class SpineCharacterDecoder {
 
                     }
                     events.insert(event);
+                    eventName.put(i, name);
                 }
             }
             basicDict.insert(events);
+
 
             JsonBuilder.Dict animations = basicDict.addKeyDict("animations");
             {
@@ -393,7 +423,7 @@ public class SpineCharacterDecoder {
     }
 
 
-    private void readSkin(DataInput input, JsonBuilder.Dict skin, boolean nonessential) throws IOException {
+    private void readSkin(DataInput input, JsonBuilder.Dict skin, boolean nonessential, int index, String name) throws IOException {
         int slotCount = input.readInt(true);
         if (slotCount == 0) return;
 
@@ -402,12 +432,13 @@ public class SpineCharacterDecoder {
 
             for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
                 String attachName = input.readString();
-
                 JsonBuilder.Dict attach = skin.addKeyDict(attachName);
 
-                readAttachment(input, attach, attachName, nonessential);
+                    readAttachment(input, attach, attachName, nonessential);
 
                 skin.insert(attach);
+
+                skinsName.put(index, name);
             }
         }
     }
@@ -441,7 +472,8 @@ public class SpineCharacterDecoder {
                     int vertexCount = input.readInt(true);
                     attach.addKeyValue("vertexCount", vertexCount);
                     JsonBuilder.List vertices = attach.addKeyList("vertices");
-                    readVertices(input, vertexCount, vertices);
+                    readVertices(input, vertexCount, vertices, attachmentName);
+
                     attach.insert(vertices);
                     attach.addKeyValue("color", nonessential ? input.readInt() : 0);
                     break;
@@ -465,7 +497,7 @@ public class SpineCharacterDecoder {
                     attach.insert(triangles);
 
                     JsonBuilder.List vertices = attach.addKeyList("vertices");
-                    readVertices(input, vertexCount, vertices);
+                    readVertices(input, vertexCount, vertices, attachmentName);
                     attach.insert(vertices);
 
                     attach.addKeyValue("hullLength", input.readInt(true));
@@ -516,7 +548,7 @@ public class SpineCharacterDecoder {
 
 
                     JsonBuilder.List vertices = attach.addKeyList("vertices");
-                    readVertices(input, vertexCount, vertices);
+                    readVertices(input, vertexCount, vertices, attachmentName);
                     attach.insert(vertices);
 
                     float[] lengths = new float[vertexCount / 3];
@@ -552,7 +584,7 @@ public class SpineCharacterDecoder {
                     attach.addKeyValue("vertexCount", vertexCount);
 
                     JsonBuilder.List vertices = attach.addKeyList("vertices");
-                    readVertices(input, vertexCount, vertices);
+                    readVertices(input, vertexCount, vertices, attachmentName);
                     attach.insert(vertices);
                     int color = nonessential ? input.readInt() : 0;
 
@@ -565,26 +597,37 @@ public class SpineCharacterDecoder {
         attachments.insert(attach);
     }
 
-    private void readVertices(DataInput input, int vertexCount, JsonBuilder.List vertices) throws IOException {
+    private void readVertices(DataInput input, int vertexCount, JsonBuilder.List vertices, String attachName) throws IOException {
         int verticesLength = vertexCount << 1;
-
+        FloatArray array = new FloatArray();
         if (!input.readBoolean()) {
-            readFloatArray(input, verticesLength, 1f, vertices);
+            array = readFloatArray(input, verticesLength, 1f, vertices);
+            attachVertices.put(attachName, array);
             return;
         }
+        float temp;
         for (int i = 0; i < vertexCount; i++) {
+
             int boneCount = input.readInt(true);
             vertices.addValue(boneCount);
+            array.add(boneCount);
             for (int ii = 0; ii < boneCount; ii++) {
                 vertices.addValue(input.readInt(true));
-                vertices.addValue(input.readFloat());
-                vertices.addValue(input.readFloat());
-                vertices.addValue(input.readFloat());
+                temp = input.readFloat();
+                vertices.addValue(temp);
+                array.add(temp);
+                temp = input.readFloat();
+                vertices.addValue(temp);
+                array.add(temp);
+                temp = input.readFloat();
+                vertices.addValue(temp);
+                array.add(temp);
             }
         }
+        attachVertices.put(attachName, array);
     }
 
-    private void readFloatArray(DataInput input, int n, float scale, JsonBuilder.List floatArray) throws IOException {
+    private FloatArray readFloatArray(DataInput input, int n, float scale, JsonBuilder.List floatArray) throws IOException {
         float[] array = new float[n];
         if (scale == 1) {
             for (int i = 0; i < n; i++)
@@ -596,7 +639,7 @@ public class SpineCharacterDecoder {
         for (float v : array) {
             floatArray.addValue(v);
         }
-
+        return new FloatArray(array);
     }
 
     private void readShortArray(DataInput input, JsonBuilder.List shortArray) throws IOException {
@@ -613,9 +656,6 @@ public class SpineCharacterDecoder {
 
     private void readAnimation(DataInput input, String name, JsonBuilder.Dict Animations) {
         JsonBuilder.Dict animation = Animations.addKeyDict(name);
-        float scale = 1f;
-        float duration = 0;
-
         try {
             // Slot timelines.
             int val = input.readInt(true);
@@ -687,6 +727,7 @@ public class SpineCharacterDecoder {
                 }
                 animation.insert(slots);
             }
+
             // Bone timelines.
             val = input.readInt(true);
             if (val != 0) {
@@ -697,6 +738,7 @@ public class SpineCharacterDecoder {
                     int boneIndex = input.readInt(true);
                     String boneName = bonesName.get(boneIndex);
                     JsonBuilder.Dict bone = bones.addKeyDict(boneName);
+
                     for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
                         int timelineType = input.readByte();
                         int frameCount = input.readInt(true);
@@ -746,161 +788,253 @@ public class SpineCharacterDecoder {
             // IK constraint timelines.
             val = input.readInt(true);
             if (val != 0) {
+
+                JsonBuilder.Dict iks = animation.addKeyDict("ik");
+
                 for (int i = 0; i < val; i++) {
-                    // int index = input.readInt(true);
-                    // int frameCount = input.readInt(true);
-                    // Animation.IkConstraintTimeline timeline = new Animation.IkConstraintTimeline(frameCount);
-                    // timeline.ikConstraintIndex = index;
-                    // for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-                    //     timeline.setFrame(frameIndex, input.readFloat(), input.readFloat(), input.readByte());
-                    //     if (frameIndex < frameCount - 1) readCurve(input, frameIndex, timeline);
-                    // }
-                     }
+                    int index = input.readInt(true);
+                    String ikName = IK_Name.get(index);
+
+                    JsonBuilder.List ik = iks.addKeyList(ikName);
+                    {
+                        int frameCount = input.readInt(true);
+                        for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
+                            JsonBuilder.Dict perInfo = ik.addDict();
+                            {
+                                perInfo.addKeyValue("time", input.readFloat());
+                                perInfo.addKeyValue("mix", input.readFloat());
+                                perInfo.addKeyValue("bendPositive", (int) input.readByte() == 0);
+
+                                if (frameIndex < frameCount - 1) readCurve(input, perInfo);
+                            }
+                            ik.insert(perInfo);
+                        }
+                    }
+                    iks.insert(ik);
+                }
+                animation.insert(iks);
             }
 
             // Transform constraint timelines.
-            for (int i = 0, n = input.readInt(true); i < n; i++) {
-                //  int index = input.readInt(true);
-                //  int frameCount = input.readInt(true);
-                //  Animation.TransformConstraintTimeline timeline = new Animation.TransformConstraintTimeline(frameCount);
-                //  timeline.transformConstraintIndex = index;
-                //  for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-                //      timeline.setFrame(frameIndex, input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat(),
-                //              input.readFloat());
-                //      if (frameIndex < frameCount - 1) readCurve(input, frameIndex, timeline);
-                //  }
-                }
+            val = input.readInt(true);
+            if (val != 0) {
+                JsonBuilder.Dict transforms = animation.addKeyDict("transform");
 
-            // Path constraint timelines.
-            for (int i = 0, n = input.readInt(true); i < n; i++) {
-                //  int index = input.readInt(true);
-                //  PathConstraintData data = skeletonData.pathConstraints.get(index);
-                //  for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
-                //      int timelineType = input.readByte();
-                //      int frameCount = input.readInt(true);
-                //      switch (timelineType) {
-                //          case PATH_POSITION:
-                //          case PATH_SPACING: {
-                //              Animation.PathConstraintPositionTimeline timeline;
-                //              float timelineScale = 1;
-                //              if (timelineType == PATH_SPACING) {
-                //                  timeline = new Animation.PathConstraintSpacingTimeline(frameCount);
-                //                  if (data.spacingMode == PathConstraintData.SpacingMode.length || data.spacingMode == PathConstraintData.SpacingMode.fixed) timelineScale = scale;
-                //              } else {
-                //                  timeline = new Animation.PathConstraintPositionTimeline(frameCount);
-                //                  if (data.positionMode == PathConstraintData.PositionMode.fixed) timelineScale = scale;
-                //              }
-                //              timeline.pathConstraintIndex = index;
-                //              for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-                //                  timeline.setFrame(frameIndex, input.readFloat(), input.readFloat() * timelineScale);
-                //                  if (frameIndex < frameCount - 1) readCurve(input, frameIndex, timeline);
-                //              }
-                //              break;
-                //          }
-                //          case PATH_MIX: {
-                //              Animation.PathConstraintMixTimeline timeline = new Animation.PathConstraintMixTimeline(frameCount);
-                //              timeline.pathConstraintIndex = index;
-                //              for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-                //                  timeline.setFrame(frameIndex, input.readFloat(), input.readFloat(), input.readFloat());
-                //                  if (frameIndex < frameCount - 1) readCurve(input, frameIndex, timeline);
-                //              }
-                //              break;}
+                for (int i = 0; i < val; i++) {
+                    int index = input.readInt(true);
+                    String transformName = transformsName.get(index);
+
+                    JsonBuilder.List transform = transforms.addKeyList(transformName);
+                    {
+                        int frameCount = input.readInt(true);
+                        for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
+                            JsonBuilder.Dict perInfo = transform.addDict();
+                            {
+                                perInfo.addKeyValue("time", input.readFloat());
+                                perInfo.addKeyValue("rotateMix", input.readFloat());
+                                perInfo.addKeyValue("translateMix", input.readFloat());
+                                perInfo.addKeyValue("scaleMix", input.readFloat());
+                                perInfo.addKeyValue("shearMix", input.readFloat());
+
+                                if (frameIndex < frameCount - 1) readCurve(input, perInfo);
+                            }
+                            transform.insert(perInfo);
+                        }
+                    }
+                    transforms.insert(transform);
+                }
+                animation.insert(transforms);
             }
 
+            // Path constraint timelines.
+            val = input.readInt(true);
+            if (val != 0) {
+                JsonBuilder.Dict paths = animation.addKeyDict("paths");
+                {
+                    for (int i = 0, n = input.readInt(true); i < n; i++) {
+                        int index = input.readInt(true);
+                        String pathName = pathsName.get(index);
+
+                        JsonBuilder.Dict path = paths.addKeyDict(pathName);
+                        {
+                            for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
+                                int timelineType = input.readByte();
+                                int frameCount = input.readInt(true);
+
+                                switch (timelineType) {
+                                    case PATH_POSITION:
+                                    case PATH_SPACING: {
+                                        JsonBuilder.List pathInfo;
+                                        String timeName;
+                                        if (timelineType == PATH_SPACING) {
+                                            pathInfo = path.addKeyList("spacing");
+                                            timeName = "spacing";
+                                        } else {
+                                            pathInfo = path.addKeyList("position");
+                                            timeName = "position";
+                                        }
+                                        for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
+                                            JsonBuilder.Dict perInfo = pathInfo.addDict();
+                                            {
+                                                perInfo.addKeyValue("time", input.readFloat());
+                                                perInfo.addKeyValue(timeName, input.readFloat());
+
+                                                if (frameIndex < frameCount - 1) readCurve(input, perInfo);
+                                            }
+                                            pathInfo.insert(perInfo);
+                                        }
+                                        path.insert(pathInfo);
+                                        break;
+                                    }
+                                    case PATH_MIX: {
+                                        JsonBuilder.List mix = path.addKeyList("mix");
+                                        {
+                                            for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
+                                                JsonBuilder.Dict perInfo = mix.addDict();
+                                                {
+                                                    perInfo.addKeyValue("time", input.readFloat());
+                                                    perInfo.addKeyValue("rotateMix", input.readFloat());
+                                                    perInfo.addKeyValue("translateMix", input.readFloat());
+
+                                                    if (frameIndex < frameCount - 1) readCurve(input, perInfo);
+                                                }
+                                                mix.insert(perInfo);
+                                            }
+                                        }
+                                        path.insert(mix);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        paths.insert(path);
+                    }
+                }
+                animation.insert(paths);
+            }
 
             // Deform timelines.
-            for (int i = 0, n = input.readInt(true); i < n; i++) {
-                //           Skin skin = skeletonData.skins.get(input.readInt(true));
-                //           for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
-                //               int slotIndex = input.readInt(true);
-                //               for (int iii = 0, nnn = input.readInt(true); iii < nnn; iii++) {
-                //                   VertexAttachment attachment = (VertexAttachment)skin.getAttachment(slotIndex, input.readString());
-                //                   boolean weighted = attachment.getBones() != null;
-                //                   float[] vertices = attachment.getVertices();
-                //                   int deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
+            val = input.readInt(true);
+            if (val != 0) {
+                JsonBuilder.Dict deforms = animation.addKeyDict("deform");
+                for (int i = 0; i < val; i++) {
+                    String deformName = skinsName.get(input.readInt(true));
+                    JsonBuilder.Dict perDeform = deforms.addKeyDict(deformName);
+                    {
+                        for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
 
-                //                   int frameCount = input.readInt(true);
-                //                   Animation.DeformTimeline timeline = new Animation.DeformTimeline(frameCount);
-                //                   timeline.slotIndex = slotIndex;
-                //                   timeline.attachment = attachment;
+                            int slotIndex = input.readInt(true);
+                            JsonBuilder.Dict slot = perDeform.addKeyDict(slotsName.get(slotIndex));
+                            {
+                                for (int iii = 0, nnn = input.readInt(true); iii < nnn; iii++) {
+                                    String timeLineName = input.readString();
+                                    JsonBuilder.List timeline = slot.addKeyList(timeLineName);
+                                    {
+                                        boolean weighted = slotAttach.get(slotsName.get(slotIndex)).equals(timeLineName);
+                                        float[] vertices = attachVertices.get(timeLineName).toArray();
+                                        int deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
 
-                //                   for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-                //                       float time = input.readFloat();
-                //                       float[] deform;
-                //                       int end = input.readInt(true);
-                //                       if (end == 0)
-                //                           deform = weighted ? new float[deformLength] : vertices;
-                //                       else {
-                //                           deform = new float[deformLength];
-                //                           int start = input.readInt(true);
-                //                           end += start;
-                //                           if (scale == 1) {
-                //                               for (int v = start; v < end; v++)
-                //                                   deform[v] = input.readFloat();
-                //                           } else {
-                //                               for (int v = start; v < end; v++)
-                //                                   deform[v] = input.readFloat() * scale;
-                //                           }
-                //                           if (!weighted) {
-                //                               for (int v = 0, vn = deform.length; v < vn; v++)
-                //                                   deform[v] += vertices[v];
-                //                           }
-                //                       }
+                                        int frameCount = input.readInt(true);
+                                        for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
+                                            JsonBuilder.Dict perInfo = timeline.addDict();
+                                            {
+                                                float time = input.readFloat();
+                                                perInfo.addKeyValue("time", time);
+                                                float[] deform;
+                                                int end = input.readInt(true);
+                                                if (end == 0)
+                                                    deform = weighted ? new float[deformLength] : vertices;
+                                                else {
+                                                    deform = new float[deformLength];
+                                                    int start = input.readInt(true);
+                                                    end += start;
+                                                    for (int v = start; v < end; v++)
+                                                        deform[v] = input.readFloat();
+                                                    if (!weighted) {
+                                                        for (int v = 0, vn = deform.length; v < vn; v++)
+                                                            deform[v] += vertices[v];
+                                                    }
+                                                    perInfo.addKeyValue("offset", start);
 
-                //                       timeline.setFrame(frameIndex, time, deform);
-                //                       if (frameIndex < frameCount - 1) readCurve(input, frameIndex, timeline);
-                //                   }
-                //                   }
-                //           }
+                                                    if (frameIndex < frameCount - 1)
+                                                        readCurve(input, perInfo);
+                                                }
+                                                JsonBuilder.List verticesValue = perInfo.addKeyList("vertices");
+                                                {
+                                                    for (float v : deform)
+                                                        verticesValue.addValue(v);
+                                                }
+                                                perDeform.insert(verticesValue);
+
+                                            }
+                                            timeline.insert(perInfo);
+                                        }
+                                    }
+                                    slot.insert(timeline);
+                                }
+                            }
+                            perDeform.insert(slot);
+                        }
+                    }
+                    deforms.insert(perDeform);
+                }
+                animation.insert(deforms);
             }
 
             // Draw order timeline.
             int drawOrderCount = input.readInt(true);
             if (drawOrderCount > 0) {
-                //            Animation.DrawOrderTimeline timeline = new Animation.DrawOrderTimeline(drawOrderCount);
-                //            int slotCount = skeletonData.slots.size;
-                //            for (int i = 0; i < drawOrderCount; i++) {
-                //                float time = input.readFloat();
-                //                int offsetCount = input.readInt(true);
-                //                int[] drawOrder = new int[slotCount];
-                //                for (int ii = slotCount - 1; ii >= 0; ii--)
-                //                    drawOrder[ii] = -1;
-                //                int[] unchanged = new int[slotCount - offsetCount];
-                //                int originalIndex = 0, unchangedIndex = 0;
-                //                for (int ii = 0; ii < offsetCount; ii++) {
-                //                    int slotIndex = input.readInt(true);
-                //                    // Collect unchanged items.
-                //                    while (originalIndex != slotIndex)
-                //                        unchanged[unchangedIndex++] = originalIndex++;
-                //                    // Set changed items.
-                //                    drawOrder[originalIndex + input.readInt(true)] = originalIndex++;
-                //                }
-                //                // Collect remaining unchanged items.
-                //                while (originalIndex < slotCount)
-                //                    unchanged[unchangedIndex++] = originalIndex++;
-                //                // Fill in unchanged items.
-                //                for (int ii = slotCount - 1; ii >= 0; ii--)
-                //                    if (drawOrder[ii] == -1) drawOrder[ii] = unchanged[--unchangedIndex];
-                //                timeline.setFrame(i, time, drawOrder);
-                //            }
-                //          }
-//
-                //        // Event timeline.
-                int eventCount = input.readInt(true);
-                if (eventCount > 0) {
+                JsonBuilder.List drawOrders = animation.addKeyList("drawOrder");
+                {
+                    for (int i = 0; i < drawOrderCount; i++) {
+                        JsonBuilder.Dict drawOrder = drawOrders.addDict();
+                        {
+                            float time = input.readFloat();
+                            int offsetCount = input.readInt(true);
+
+                            JsonBuilder.List offsets = drawOrder.addKeyList("offsets");
+                            {
+                                for (int ii = 0; ii < offsetCount; ii++) {
+                                    JsonBuilder.Dict offset = offsets.addDict();
+                                    {
+                                        int slotIndex = input.readInt(true);
+                                        offset.addKeyValue("slot", slotsName.get(slotIndex));
+                                        offset.addKeyValue("offset", input.readInt(true));
+                                    }
+                                    offsets.insert(offset);
+                                }
+                            }
+                            drawOrder.insert(offsets);
+                            drawOrder.addKeyValue("time", time);
+                        }
+                        drawOrders.insert(drawOrder);
+                    }
                 }
-                //            Animation.EventTimeline timeline = new Animation.EventTimeline(eventCount);
-                //            for (int i = 0; i < eventCount; i++) {
-                //                float time = input.readFloat();
-                //                EventData eventData = skeletonData.events.get(input.readInt(true));
-                //                Event event = new Event(time, eventData);
-                //                event.intValue = input.readInt(false);
-                //                event.floatValue = input.readFloat();
-                //                event.stringValue = input.readBoolean() ? input.readString() : eventData.stringValue;
-                //                timeline.setFrame(i, event);
-                //            }
-                           }
-        } catch (IOException ex) {
+                animation.insert(drawOrders);
+            }
+
+            // Event timeline.
+            int eventCount = input.readInt(true);
+            if (eventCount > 0) {
+                JsonBuilder.List events = animation.addKeyList("events");
+                {
+                    for (int i = 0; i < eventCount; i++) {
+                        JsonBuilder.Dict event = events.addDict();
+                        {
+                            event.addKeyValue("time", input.readFloat());
+                            event.addKeyValue("name", eventName.get(input.readInt(true)));
+
+                            event.addKeyValue("int", input.readInt(false));
+                            event.addKeyValue("float", input.readFloat());
+                            event.addKeyValue("string", input.readString());
+                        }
+                        events.insert(event);
+                    }
+                }
+                animation.insert(events);
+            }
+
+        } catch (Throwable ex) {
             throw new SerializationException("Error reading skeleton file.", ex);
         }
 

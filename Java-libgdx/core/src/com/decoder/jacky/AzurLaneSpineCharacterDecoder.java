@@ -9,6 +9,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
 import java.util.*;
 
 public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
@@ -25,16 +28,15 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 	private boolean hasDone = false;
 	private boolean jsonType = false;
 
-	private JsonValue jsonValue;
 	private String val;
 	private int size = 0;
 	private String[] array;
-	private FileHandle output;
 
 	private String[] type = new String[]{"skeleton", "Texture", "Atlas"};
-	int indexType = 0;
+	private int indexType = 0;
 
-	private boolean nullType=false;
+	private boolean nullType
+	;private 		boolean realGo=false;
 
 	private float[][] colors={
 		{1,1,1,1},
@@ -45,6 +47,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 	private String name;
 
 	public AzurLaneSpineCharacterDecoder(String[] args) {
+		this.path = System.getProperty("user.dir");
 		if (args.length>0){
 			if (args.length == 1 && args[0].endsWith(".json")) {
 				jsonType = true;
@@ -56,7 +59,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 				}
 				size = this.args.size();
 			}
-			this.path = System.getProperty("user.dir");
+
 			nullType=false;
 		}
 		else {
@@ -76,7 +79,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 		if (jsonType) {
 			JsonReader reader = new JsonReader();
 
-			jsonValue = reader.parse(Gdx.files.absolute(args.get(0)));
+			JsonValue jsonValue = reader.parse(Gdx.files.absolute(args.get(0)));
 
 			System.out.println();
 			array = jsonValue.asStringArray();
@@ -87,9 +90,10 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 
 	@Override
 	public void render() {
-		float[] showColor=new float[4];
+		float[] showColor;
 		if (nullType) showColor=colors[2];
 		else if (hasDone)showColor=colors[3];
+		else if (realGo)showColor=colors[1];
 		else showColor=colors[0];
 
 		Gdx.gl.glClearColor(showColor[0],showColor[1],showColor[2],showColor[3]);
@@ -98,8 +102,9 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 		batch.draw(img, Gdx.graphics.getWidth() / 2 - img.getWidth() / 2, Gdx.graphics.getHeight() / 2 - img.getHeight() / 2);
 		batch.end();
 
-		if (!nullType){
+		if (!nullType&&realGo){
 			if (index < size) {
+				FileHandle output;
 				if (jsonType) {
 					String fileName = array[index];
 					if (fileName != null && (fileName.endsWith(".skel.txt") || fileName.endsWith(".skel"))) {
@@ -124,7 +129,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 					val = decoder.decoder(Gdx.files.absolute(args.get(index)));
 
 				float a = ((index + 1) * 100f) / size;
-				System.out.printf("finish\t%s\t%s\n\tN0.%d,\n\t%.2f%%\n", name, type[indexType], index + 1, a);
+				System.out.printf("finish:\t%s\ttype:%s\n\tN0.%d,\n\t%.2f%%\n", name, type[indexType], index + 1, a);
 
 				if (val != null) {
 
@@ -146,11 +151,74 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 			}
 		}
 		if(nullType){
-			if(Gdx.input.isKeyJustPressed(Input.Keys.O))
+			if(Gdx.input.isKeyPressed(Input.Keys.O)&&Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
 			{
-				nullType=false;
+				try{
+					JFileChooser fileChooser =new JFileChooser();
+					fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					fileChooser.setMultiSelectionEnabled(true);
+
+					fileChooser.setFileFilter(new FileFilter() {
+						@Override
+						public boolean accept(File f) {
+							String fileName=f.getAbsolutePath();
+							return fileName.endsWith(".skel.txt") || fileName.endsWith(".skel")||f.isDirectory();
+						}
+
+						@Override
+						public String getDescription() {
+							return "Spine骨架文件 (*.skel;*.skel.txt)";
+						}
+					});
+
+					int val=fileChooser.showOpenDialog(null);
+					if(val==JFileChooser.APPROVE_OPTION)
+					{
+						args.clear();
+						File[] files=fileChooser.getSelectedFiles();
+						for (File file : files) {
+							args.add(file.getAbsolutePath());
+						}
+						size=files.length;
+						nullType=false;
+					}
+				}catch (Throwable ex){
+					ex.printStackTrace();
+				}
+
 			}
 
+		}
+		if (!realGo){
+			if(Gdx.input.isKeyPressed(Input.Keys.S)&&Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+			{
+				try{
+					JFileChooser dirChooser =new JFileChooser();
+					dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+					dirChooser.setFileFilter(new FileFilter() {
+						@Override
+						public boolean accept(File f) {
+							return f.isDirectory();
+						}
+
+						@Override
+						public String getDescription() {
+							return "导出文件夹";
+						}
+					});
+
+					int val=dirChooser.showSaveDialog(null);
+					if(val==JFileChooser.APPROVE_OPTION) {
+						this.path = dirChooser.getSelectedFile().getAbsolutePath();
+					}
+				}catch (Throwable ex){
+					ex.printStackTrace();
+				}
+
+			}
+			if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
+				realGo=true;
 		}
 
 	}
