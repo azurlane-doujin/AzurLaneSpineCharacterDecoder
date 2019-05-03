@@ -13,6 +13,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 	private SpriteBatch batch;
@@ -28,7 +29,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 	private boolean hasDone = false;
 	private boolean jsonType = false;
 
-	private String val;
+	private String val="";
 	private int size = 0;
 	private String[] array;
 
@@ -129,6 +130,10 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 					val = decoder.decoder(Gdx.files.absolute(args.get(index)));
 
 				float a = ((index + 1) * 100f) / size;
+				if (val!=null&&val.startsWith("{\"error\"")){
+					System.out.printf("error to load %s\t%d\n",name,index+1);
+					val="";
+				}
 				System.out.printf("finish:\t%s\ttype:%s\n\tN0.%d,\n\t%.2f%%\n", name, type[indexType], index + 1, a);
 
 				if (val != null) {

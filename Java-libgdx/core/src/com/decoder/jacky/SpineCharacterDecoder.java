@@ -40,7 +40,8 @@ public class SpineCharacterDecoder {
             "multiply",
             "screen",
     };
-    private final String[] PositionMode = new String[]{"fixed",
+    private final String[] PositionMode = new String[]{
+            "fixed",
             "percent"};
     private final String[] SpacingMode = new String[]{
             "length",
@@ -74,6 +75,8 @@ public class SpineCharacterDecoder {
 
     private Map<String, FloatArray> attachVertices;
     private Map<String, String> slotAttach;
+
+    String version;
 
     String name;
 
@@ -122,7 +125,7 @@ public class SpineCharacterDecoder {
             JsonBuilder.Dict skeleton = basicDict.addKeyDict("skeleton");
             {
                 String hash = input.readString();
-                String version = input.readString();
+                version = input.readString();
                 float width = input.readFloat();
                 float height = input.readFloat();
 
@@ -190,7 +193,7 @@ public class SpineCharacterDecoder {
                         bone.addKeyValue("shearX", shearX);
                         bone.addKeyValue("shearY", shearY);
                         bone.addKeyValue("length", length);
-                        bone.addKeyValue("transform", this.TransformMode[transformMode]);
+                        bone.addKeyValue("transform", this.TransformMode[transformMode >= TransformMode.length ? TransformMode.length - 1 : transformMode]);
 
                         if (nonessential) {
                             int color = input.readInt();
@@ -223,24 +226,27 @@ public class SpineCharacterDecoder {
                         int color = input.readInt();
                         String color_s = Integer.toHexString(color).substring(2);
 
-                        int darkColor = input.readInt();
-                        String darkColor_s = null;
-                        if (darkColor != -1)
-                            darkColor_s = Integer.toHexString(color);
+                        if (version.startsWith("3.6")) {
+                            int darkColor = input.readInt();
+                            String darkColor_s = null;
+                            if (darkColor != -1)
+                                darkColor_s = Integer.toHexString(color);
+                            if (darkColor_s != null)
+                                slot.addKeyValue("dark", darkColor_s);
+
+                        }
 
                         String attachmentName = input.readString();
+
                         int blendMode = input.readInt(true);
+                        slot.addKeyValue("blend", this.BlendMode[blendMode >= this.BlendMode.length ? BlendMode.length - 1 : blendMode]);
 
                         slot.addKeyValue("name", slotName != null ? slotName : "null");
                         slot.addKeyValue("bone", boneName != null ? boneName : "null");
                         slot.addKeyValue("color", color_s);
-                        if (darkColor_s != null)
-                            slot.addKeyValue("dark", darkColor_s);
+
                         if (attachmentName != null)
                             slot.addKeyValue("attachment", attachmentName);
-
-                        slot.addKeyValue("blend", this.BlendMode[blendMode]);
-
                         slotsName.put(i, slotName);
                         slotAttach.put(slotName, attachmentName);
                     }
@@ -249,7 +255,6 @@ public class SpineCharacterDecoder {
             }
             basicDict.insert(slots);
 
-
             JsonBuilder.List IKs = basicDict.addKeyList("ik");
             {
                 for (int i = 0, n = input.readInt(true); i < n; i++) {
@@ -257,10 +262,8 @@ public class SpineCharacterDecoder {
                     {
                         String name = input.readString();
                         int order = input.readInt(true);
-
                         ik.addKeyValue("name", name != null ? name : "null");
                         ik.addKeyValue("order", order);
-
                         JsonBuilder.List bones = ik.addKeyList("bones");
                         {
                             for (int j = 0, m = input.readInt(true); j < m; j++) {
@@ -268,18 +271,15 @@ public class SpineCharacterDecoder {
                             }
                         }
                         ik.insert(bones);
-
                         ik.addKeyValue("target", bonesName.get(input.readInt(true)));
                         ik.addKeyValue("mix", input.readFloat());
                         ik.addKeyValue("bendPositive", input.readByte());
-
                         IK_Name.put(i, name);
                     }
                     IKs.insert(ik);
                 }
             }
             basicDict.insert(IKs);
-
 
             JsonBuilder.List transforms = basicDict.addKeyList("transform");
             {
@@ -289,7 +289,6 @@ public class SpineCharacterDecoder {
                         String name = input.readString();
                         transform.addKeyValue("name", name != null ? name : "null");
                         transform.addKeyValue("order", input.readInt(true));
-
                         JsonBuilder.List bones = transform.addKeyList("bones");
                         {
                             for (int j = 0, m = input.readInt(true); j < m; j++) {
@@ -297,10 +296,11 @@ public class SpineCharacterDecoder {
                             }
                         }
                         transform.insert(bones);
-
                         transform.addKeyValue("target", bonesName.get(input.readInt(true)));
-                        transform.addKeyValue("local", input.readBoolean());
-                        transform.addKeyValue("relative", input.readBoolean());
+                        if (version.startsWith("3.6")) {
+                            transform.addKeyValue("local", input.readBoolean());
+                            transform.addKeyValue("relative", input.readBoolean());
+                        }
                         transform.addKeyValue("offsetRotation", input.readFloat());
                         transform.addKeyValue("offsetX", input.readFloat());
                         transform.addKeyValue("offsetY", input.readFloat());
@@ -311,14 +311,12 @@ public class SpineCharacterDecoder {
                         transform.addKeyValue("translateMix", input.readFloat());
                         transform.addKeyValue("scaleMix", input.readFloat());
                         transform.addKeyValue("shearMix", input.readFloat());
-
                         transformsName.put(i, name);
                     }
                     transforms.insert(transform);
                 }
             }
             basicDict.insert(transforms);
-
 
             JsonBuilder.List paths = basicDict.addKeyList("path");
             {
@@ -328,7 +326,6 @@ public class SpineCharacterDecoder {
                         String name = input.readString();
                         path.addKeyValue("name", name != null ? name : "null");
                         path.addKeyValue("order", input.readInt(true));
-
                         JsonBuilder.List bones = path.addKeyList("bones");
                         {
                             for (int j = 0, m = input.readInt(true); j < m; j++) {
@@ -337,28 +334,31 @@ public class SpineCharacterDecoder {
                         }
                         path.insert(bones);
 
-                        String positionMode = PositionMode[input.readInt(true)];
-                        String spacingMode = SpacingMode[input.readInt(true)];
-                        String rotateMode = RotateMode[input.readInt(true)];
+
+                        path.addKeyValue("target",slotsName.get(input.readInt(true)));
+
+                        int positionModeIndex = input.readInt(true);
+                        int spacingModeIndex = input.readInt(true);
+                        int rotateModeIndex = input.readInt(true);
+                        String positionMode = PositionMode[positionModeIndex >= PositionMode.length ? 1 : positionModeIndex];
+                        String spacingMode = SpacingMode[spacingModeIndex >= SpacingMode.length ? 2 : spacingModeIndex];
+                        String rotateMode = RotateMode[rotateModeIndex >= RotateMode.length ? 2 : rotateModeIndex];
                         path.addKeyValue("positionMode", positionMode);
                         path.addKeyValue("spacingMode", spacingMode);
                         path.addKeyValue("rotateMode", rotateMode);
 
-                        path.addKeyValue("offsetRotation", input.readFloat());
+
+                        path.addKeyValue("offset", input.readFloat());
                         float position = input.readFloat();
                         if (positionMode.equals("fixed"))
                             position *= 1;
                         path.addKeyValue("position", position);
-
                         float spacing = input.readFloat();
                         if (spacingMode.equals("length") || spacingMode.equals("fixed"))
                             spacing *= 1;
                         path.addKeyValue("spacing", spacing);
-
                         path.addKeyValue("rotateMix", input.readFloat());
                         path.addKeyValue("translateMix", input.readFloat());
-
-
                         pathsName.put(i, name);
                     }
                     paths.insert(path);
@@ -367,52 +367,52 @@ public class SpineCharacterDecoder {
             basicDict.insert(paths);
 
 
-            JsonBuilder.Dict skins = basicDict.addKeyDict("skins");
-            {
-                JsonBuilder.Dict defaultSkin = skins.addKeyDict("default");
-                readSkin(input, defaultSkin, nonessential, 0, name);
-                if (defaultSkin != null) {
-                    skins.insert(defaultSkin);
-
-                }
-
-                for (int i = 0, n = input.readInt(true); i < n; i++) {
-                    String name = input.readString();
-                    JsonBuilder.Dict skin = skins.addKeyDict(name);
-                    readSkin(input, skin, nonessential, i + 1, name);
-                    if (skin != null) {
-                        skins.insert(skin);
-                    }
-                }
-            }
-            basicDict.insert(skins);
-
-
-            JsonBuilder.Dict events = basicDict.addKeyDict("events");
-            {
-                for (int i = 0, n = input.readInt(true); i < n; i++) {
-                    String name = input.readString();
-                    JsonBuilder.Dict event = events.addKeyDict(name);
-                    {
-                        event.addKeyValue("int", input.readInt(false));
-                        event.addKeyValue("float", input.readFloat());
-                        String string = input.readString();
-                        event.addKeyValue("string", string != null ? string : "null");
-
-                    }
-                    events.insert(event);
-                    eventName.put(i, name);
-                }
-            }
-            basicDict.insert(events);
-
-
-            JsonBuilder.Dict animations = basicDict.addKeyDict("animations");
-            {
-                for (int i = 0, n = input.readInt(true); i < n; i++)
-                    readAnimation(input, input.readString(), animations);
-            }
-            basicDict.insert(animations);
+            //    JsonBuilder.Dict skins = basicDict.addKeyDict("skins");
+            //    {
+            //        JsonBuilder.Dict defaultSkin = skins.addKeyDict("default");
+            //        readSkin(input, defaultSkin, nonessential, 0, name);
+            //        if (defaultSkin != null) {
+            //            skins.insert(defaultSkin);
+//
+            //        }
+//
+            //        for (int i = 0, n = input.readInt(true); i < n; i++) {
+            //            String name = input.readString();
+            //            JsonBuilder.Dict skin = skins.addKeyDict(name);
+            //            readSkin(input, skin, nonessential, i + 1, name);
+            //            if (skin != null) {
+            //                skins.insert(skin);
+            //            }
+            //        }
+            //    }
+            //    basicDict.insert(skins);
+//
+//
+            //    JsonBuilder.Dict events = basicDict.addKeyDict("events");
+            //    {
+            //        for (int i = 0, n = input.readInt(true); i < n; i++) {
+            //            String name = input.readString();
+            //            JsonBuilder.Dict event = events.addKeyDict(name);
+            //            {
+            //                event.addKeyValue("int", input.readInt(false));
+            //                event.addKeyValue("float", input.readFloat());
+            //                String string = input.readString();
+            //                event.addKeyValue("string", string != null ? string : "null");
+//
+            //            }
+            //            events.insert(event);
+            //            eventName.put(i, name);
+            //        }
+            //    }
+            //    basicDict.insert(events);
+//
+//
+            //    JsonBuilder.Dict animations = basicDict.addKeyDict("animations");
+            //    {
+            //        for (int i = 0, n = input.readInt(true); i < n; i++)
+            //            readAnimation(input, input.readString(), animations);
+            //    }
+            //    basicDict.insert(animations);
 
             builder.insert(basicDict);
         } catch (IOException info) {
@@ -434,7 +434,7 @@ public class SpineCharacterDecoder {
                 String attachName = input.readString();
                 JsonBuilder.Dict attach = skin.addKeyDict(attachName);
 
-                    readAttachment(input, attach, attachName, nonessential);
+                readAttachment(input, attach, attachName, nonessential);
 
                 skin.insert(attach);
 
@@ -451,7 +451,7 @@ public class SpineCharacterDecoder {
         JsonBuilder.Dict attach = attachments.addKeyDict(name);
         {
             int type = input.readByte();
-            String typeName = AttachmentType[type];
+            String typeName = AttachmentType[type >= AttachmentType.length ? AttachmentType.length - 1 : type];
 
             attach.addKeyValue("type", typeName);
 
@@ -609,10 +609,12 @@ public class SpineCharacterDecoder {
         for (int i = 0; i < vertexCount; i++) {
 
             int boneCount = input.readInt(true);
-            vertices.addValue(boneCount);
+            vertices.addValue((float) boneCount);
             array.add(boneCount);
             for (int ii = 0; ii < boneCount; ii++) {
-                vertices.addValue(input.readInt(true));
+                temp=(float) input.readInt(true);
+                vertices.addValue(temp);
+                array.add(temp);
                 temp = input.readFloat();
                 vertices.addValue(temp);
                 array.add(temp);
