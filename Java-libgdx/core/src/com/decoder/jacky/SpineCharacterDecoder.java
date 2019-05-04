@@ -88,6 +88,7 @@ public class SpineCharacterDecoder {
     String version;
 
     String name;
+    boolean failAnimation=false;
 
     String decoder(FileHandle binaryFile) {
         name = binaryFile.nameWithoutExtension().replace(".skel", "");
@@ -416,19 +417,25 @@ public class SpineCharacterDecoder {
             }
             basicDict.insert(events);
 
-
+        try {
             JsonBuilder.Dict animations = basicDict.addKeyDict("animations");
             {
                 for (int i = 0, n = input.readInt(true); i < n; i++)
                     readAnimation(input, input.readString(), animations);
             }
             basicDict.insert(animations);
+        }catch (Throwable event){
+            failAnimation=true;
+            System.out.printf("error to load %s's animations",name);
+        }
 
             builder.insert(basicDict);
         } catch (IOException info) {
             return String.format("{\"error\":%s}", info.toString());
         }
-        return builder.toString();
+        String value=builder.toString();
+        if (failAnimation)value=value.substring(0,value.length()-14)+"}";
+        return value;
 
     }
 
@@ -972,6 +979,7 @@ public class SpineCharacterDecoder {
             val = input.readInt(true);
             if (val != 0) {
                 JsonBuilder.Dict deforms = animation.addKeyDict("deform");
+
                 for (int i = 0; i < val; i++) {
                     String deformName = skinsName.get(input.readInt(true));
                     JsonBuilder.Dict perDeform = deforms.addKeyDict(deformName);
@@ -985,8 +993,8 @@ public class SpineCharacterDecoder {
                                     String timeLineName = input.readString();
                                     JsonBuilder.List timeline = slot.addKeyList(timeLineName);
                                     {
-                                        boolean weighted = slotAttach.get(slotsName.get(slotIndex)).equals(timeLineName);
-                                        float[] vertices = attachVertices.get(timeLineName).toArray();
+                                        boolean weighted = slotAttach.get(slotsName.get(slotIndex)) != null && slotAttach.get(slotsName.get(slotIndex)).equals(timeLineName);
+                                        float[] vertices = attachVertices.get(timeLineName)==null?new float[0]:attachVertices.get(timeLineName).toArray();
                                         int deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
 
                                         int frameCount = input.readInt(true);
@@ -1003,6 +1011,8 @@ public class SpineCharacterDecoder {
                                                     deform = new float[deformLength];
                                                     int start = input.readInt(true);
                                                     end += start;
+                                                    if (end>deformLength||end<0)end=deformLength;
+                                                    if (start>deformLength||start<0)start=deformLength;
                                                     for (int v = start; v < end; v++)
                                                         deform[v] = input.readFloat();
                                                     if (!weighted) {
@@ -1019,7 +1029,7 @@ public class SpineCharacterDecoder {
                                                     for (float v : deform)
                                                         verticesValue.addValue(v);
                                                 }
-                                                perDeform.insert(verticesValue);
+                                                perInfo.insert(verticesValue);
 
                                             }
                                             timeline.insert(perInfo);

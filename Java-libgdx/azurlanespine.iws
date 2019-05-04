@@ -117,25 +117,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharacterDecoder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="16683">
-              <caret line="867" column="35" lean-forward="true" selection-start-line="867" selection-start-column="35" selection-end-line="867" selection-end-column="35" />
+            <state relative-caret-position="193">
+              <caret line="437" selection-start-line="437" selection-end-line="437" />
               <folding>
-                <element signature="method#readString#0;class#2952:4433" />
-                <element signature="e#26553#27781#0" />
-                <element signature="e#28306#28654#0" />
+                <element signature="e#18265#18423#1" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/io/DataInputStream.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="444" column="23" selection-start-line="444" selection-start-column="23" selection-end-line="444" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -143,7 +132,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.9/1409aca6a4293a7ca8dbd60281c3211a195dd39a/gdx-1.9.9-sources.jar!/com/badlogic/gdx/graphics/Color.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-6182">
+            <state relative-caret-position="220">
               <caret line="24" column="13" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
             </state>
           </provider>
@@ -161,13 +150,30 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2926">
-              <caret line="146" column="56" selection-start-line="146" selection-start-column="56" selection-end-line="146" selection-end-column="56" />
+            <state relative-caret-position="394">
+              <caret line="145" selection-start-line="145" selection-end-line="145" />
               <folding>
                 <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/JsonBuilder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="182">
+              <caret line="30" column="46" selection-start-line="30" selection-start-column="46" selection-end-line="30" selection-end-column="46" />
+              <folding>
+                <element signature="e#496#497#0" expanded="true" />
+                <element signature="e#537#538#0" expanded="true" />
+                <element signature="e#678#679#0" expanded="true" />
+                <element signature="e#718#719#0" expanded="true" />
+                <element signature="e#2967#2968#0" expanded="true" />
+                <element signature="e#3024#3025#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -235,8 +241,8 @@
         <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharactDecoder.java" />
         <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharactDecoder.java" />
         <option value="$PROJECT_DIR$/desktop/src/com/decoder/jacky/desktop/DesktopLauncher.java" />
-        <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java" />
         <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/JsonBuilder.java" />
+        <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java" />
         <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharacterDecoder.java" />
       </list>
     </option>
@@ -245,9 +251,9 @@
     <option name="LAST_EDITED_MODULE_NAME" />
     <option name="LAST_EDITED_TAB_NAME" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="986" />
-    <option name="width" value="941" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="60" />
+    <option name="width" value="940" />
     <option name="height" value="1087" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -310,8 +316,8 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -367,7 +373,7 @@
     <configuration name="DesktopLauncher-1" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="com.decoder.jacky.desktop.DesktopLauncher" />
       <module name="azurlanespine.desktop.main" />
-      <option name="PROGRAM_PARAMETERS" value="&quot;D:\Users\qz228\Downloads\spine-runtimes-3.6.53\examples\stretchyman\export\stretchyman-pro.skel&quot;" />
+      <option name="PROGRAM_PARAMETERS" value="&quot;D:\Users\qz228\Desktop\output\build_char_002_amiya.skel.txt&quot;" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.decoder.jacky.desktop.*" />
@@ -495,9 +501,9 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="59" y="-8" width="1869" height="1096" extended-state="6" />
+    <frame x="60" y="0" width="940" height="1087" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16141514" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.33484676" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -506,8 +512,8 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32622603" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.3880597" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32615715" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39181915" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -536,12 +542,6 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java</url>
-          <line>132</line>
-          <properties />
-          <option name="timeStamp" value="90" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java</url>
           <line>139</line>
           <properties />
           <option name="timeStamp" value="91" />
@@ -552,11 +552,30 @@
           <properties />
           <option name="timeStamp" value="92" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java</url>
+          <line>145</line>
+          <properties />
+          <option name="timeStamp" value="105" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharacterDecoder.java</url>
+          <line>436</line>
+          <properties />
+          <option name="timeStamp" value="110" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharacterDecoder.java</url>
+          <line>437</line>
+          <properties />
+          <option name="timeStamp" value="111" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
         <watch expression="args" language="JAVA" />
+        <watch expression="decoder" language="JAVA" />
       </configuration>
     </watches-manager>
   </component>
@@ -624,18 +643,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/JsonBuilder.java">
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/io/DataInputStream.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1760">
-          <caret line="96" column="20" selection-start-line="96" selection-start-column="20" selection-end-line="96" selection-end-column="20" />
-          <folding>
-            <element signature="e#496#497#0" expanded="true" />
-            <element signature="e#537#538#0" expanded="true" />
-            <element signature="e#678#679#0" expanded="true" />
-            <element signature="e#718#719#0" expanded="true" />
-            <element signature="e#2967#2968#0" expanded="true" />
-            <element signature="e#3024#3025#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="9218">
+          <caret line="444" column="23" selection-start-line="444" selection-start-column="23" selection-end-line="444" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.9/1409aca6a4293a7ca8dbd60281c3211a195dd39a/gdx-1.9.9-sources.jar!/com/badlogic/gdx/graphics/Color.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="24" column="13" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -643,16 +661,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
           <caret line="11" column="47" selection-start-line="11" selection-start-column="47" selection-end-line="11" selection-end-column="47" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2926">
-          <caret line="146" column="56" selection-start-line="146" selection-start-column="56" selection-end-line="146" selection-end-column="56" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -700,28 +708,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.9/1409aca6a4293a7ca8dbd60281c3211a195dd39a/gdx-1.9.9-sources.jar!/com/badlogic/gdx/graphics/Color.java">
+    <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/JsonBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-6182">
-          <caret line="24" column="13" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/io/DataInputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="444" column="23" selection-start-line="444" selection-start-column="23" selection-end-line="444" selection-end-column="23" />
+        <state relative-caret-position="182">
+          <caret line="30" column="46" selection-start-line="30" selection-start-column="46" selection-end-line="30" selection-end-column="46" />
+          <folding>
+            <element signature="e#496#497#0" expanded="true" />
+            <element signature="e#537#538#0" expanded="true" />
+            <element signature="e#678#679#0" expanded="true" />
+            <element signature="e#718#719#0" expanded="true" />
+            <element signature="e#2967#2968#0" expanded="true" />
+            <element signature="e#3024#3025#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharacterDecoder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="16683">
-          <caret line="867" column="35" lean-forward="true" selection-start-line="867" selection-start-column="35" selection-end-line="867" selection-end-column="35" />
+        <state relative-caret-position="193">
+          <caret line="437" selection-start-line="437" selection-end-line="437" />
           <folding>
-            <element signature="method#readString#0;class#2952:4433" />
-            <element signature="e#26553#27781#0" />
-            <element signature="e#28306#28654#0" />
+            <element signature="e#18265#18423#1" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="394">
+          <caret line="145" selection-start-line="145" selection-end-line="145" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
