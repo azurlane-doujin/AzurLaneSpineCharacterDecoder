@@ -94,6 +94,9 @@ public class JsonBuilder {
             builder.append(value).append(",");
 
         }
+        public void addValue(int value){
+            builder.append(value).append(",");
+        }
 
         public void addValue(boolean value) {
             builder.append(value).append(",");
