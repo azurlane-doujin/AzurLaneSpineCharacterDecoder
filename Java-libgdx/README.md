@@ -5,8 +5,9 @@
 ## 使用方法
 
 在 azurlanespine.jar 的同级目录打开cmd
-输入 `java -jar azurlanespine.jar` 启动即可
-当然，也可以选择附加输入文件
+输入 `java -jar azurlanespine.jar` 启动即可.
+
+### 当然，也可以选择附加输入文件
 * 输入skel文件列表（不能有其他类型的文件，文件夹）
 
 * 输入包含全部文件路径的json文件,json文件格式如下
