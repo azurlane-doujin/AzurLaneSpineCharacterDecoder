@@ -25,6 +25,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 	private OrthographicCamera camera;
 
 	private SpineCharacterDecoder decoder;
+	private AtlasLoader atlasLoader;
 
 	private int index = 0;
 	private String path;
@@ -40,6 +41,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 
 	private boolean nullType
 	;private 		boolean realGo=false;
+	private boolean readAtlas=false;
 
 	private float[][] colors={
 		{1,1,1,1},
@@ -55,7 +57,13 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 			if (args.length == 1 && args[0].endsWith(".json")) {
 				jsonType = true;
 				this.args.add(args[0]);
-			} else {
+			}
+			if (args.length==2&&args[0].equals("-a")){
+				readAtlas=true;
+				this.args.add(args[1]);
+			}
+
+			else {
 				for (String arg : args) {
 					if (arg.endsWith(".skel.txt") || arg.endsWith(".skel"))
 						this.args.add(arg);
@@ -79,6 +87,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 
 		decoder = new SpineCharacterDecoder();
 
+
 		if (jsonType) {
 			JsonReader reader = new JsonReader();
 
@@ -89,7 +98,13 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 			size = array.length;
 
 		}
-		path="D:\\Users\\qz228\\Desktop";
+		if (readAtlas)
+		{
+
+			atlasLoader=new AtlasLoader(Gdx.files.absolute(args.get(0)));
+		}
+
+		//path="D:\\Users\\qz228\\Desktop";
 	}
 
 	@Override
@@ -106,6 +121,10 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 		batch.draw(img, Gdx.graphics.getWidth() / 2 - img.getWidth() / 2, Gdx.graphics.getHeight() / 2 - img.getHeight() / 2);
 		batch.end();
 
+		if (readAtlas)
+		{
+			atlasLoader.load();
+		}
 		if (!nullType&&realGo){
 			if (index < size) {
 				FileHandle output;

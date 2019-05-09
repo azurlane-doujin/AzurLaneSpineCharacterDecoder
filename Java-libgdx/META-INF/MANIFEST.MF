@@ -1,3 +1,10 @@
 Manifest-Version: 1.0
+Class-Path: lwjgl-platform-2.9.2-natives-windows.jar lwjgl-platform-2.
+ 9.2-natives-linux.jar lwjgl-2.9.2.jar gdx-platform-1.9.9-natives-desk
+ top.jar jinput-platform-2.0.5-natives-linux.jar jinput-platform-2.0.5
+ -natives-osx.jar jinput-2.0.5.jar jorbis-0.0.17.jar lwjgl_util-2.9.2.
+ jar jutils-1.0.0.jar jlayer-1.0.1-gdx.jar gdx-backend-lwjgl-1.9.9.jar
+  gdx-1.9.9.jar lwjgl-platform-2.9.2-natives-osx.jar jinput-platform-2
+ .0.5-natives-windows.jar
 Main-Class: com.decoder.jacky.desktop.DesktopLauncher
 

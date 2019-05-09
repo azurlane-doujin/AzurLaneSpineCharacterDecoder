@@ -13,6 +13,10 @@ public class JsonBuilder {
     }
     public void insert(Dict dict){builder.insert(dict.index,dict.exitDict());}
     public void insert(List list){builder.insert(list.index,list.exitList());}
+    public void insertEmpty(Dict dict){builder.insert(dict.index,"{}");}
+    public void insertEmpty(List list){builder.insert(list.index,"[]");}
+
+
 
     @Override
     public String toString() {
@@ -29,6 +33,9 @@ public class JsonBuilder {
 
         public void insert(Dict dict){builder.insert(dict.index,dict.exitDict()).append(",");}
         public void insert(List list){builder.insert(list.index,list.exitList()).append(",");}
+
+        public void insertEmpty(Dict dict){builder.insert(dict.index,"{}").append(",");}
+        public void insertEmpty(List list){builder.insert(list.index,"[]").append(",");}
 
         public void addKeyValue(String key, String value) {
             if (value==null||value.equals("null"))

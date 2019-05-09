@@ -2,49 +2,11 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="azurlanespine:jar" />
+      <artifact name="azurlanespine:jar2" />
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="05d9adb5-146b-4e54-8500-bddb411f13c0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/core/azurlanespine.core.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/azurlanespine.core.main.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/azurlanespine.core.test.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/desktop/azurlanespine.desktop.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/desktop/azurlanespine.desktop.main.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/desktop/azurlanespine.desktop.test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/META-INF/MANIFEST.MF" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/azurlanespine.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/azurlanespine.ipr" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/azurlanespine.iws" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/classes/artifacts/azurlanespine/azurlanespine_jar.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/classes/artifacts/azurlanespine_jar2/azurlanespine.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/assets/WatchDog.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/core.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/out/production/classes/com/decoder/jacky/AzurLaneSpineCharacterDecoder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/out/production/classes/com/decoder/jacky/JsonBuilder$Dict.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/out/production/classes/com/decoder/jacky/JsonBuilder$List.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/out/production/classes/com/decoder/jacky/JsonBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/out/production/classes/com/decoder/jacky/SpineCharactDecoder$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/out/production/classes/com/decoder/jacky/SpineCharactDecoder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/src/com/decoder/jacky/JsonBuilder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/core/src/com/decoder/jacky/SpineCharacterDecoder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/desktop/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/desktop/desktop.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/desktop/out/production/classes/com/decoder/jacky/desktop/DesktopLauncher.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/desktop/src/META-INF/MANIFEST.MF" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/desktop/src/com/decoder/jacky/desktop/DesktopLauncher.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/gradle.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Java-libgdx/settings.gradle" beforeDir="false" />
-    </list>
+    <list default="true" id="05d9adb5-146b-4e54-8500-bddb411f13c0" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -52,8 +14,6 @@
     <ignored path="$PROJECT_DIR$/core/build/" />
     <ignored path="$PROJECT_DIR$/desktop/.gradle/" />
     <ignored path="$PROJECT_DIR$/desktop/build/" />
-    <ignored path="$PROJECT_DIR$/core/out/" />
-    <ignored path="$PROJECT_DIR$/desktop/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,62 +61,51 @@
     <ui_properties converted="true" />
   </component>
   <component name="DefaultGradleProjectSettings">
-    <option name="isMigrated" value="true" />
-  </component>
-  <component name="ExternalProjectsData">
-    <projectState path="$PROJECT_DIR$">
-      <ProjectState />
-    </projectState>
-  </component>
-  <component name="ExternalProjectsManager">
-    <system id="GRADLE">
-      <state>
-        <projects_view />
-      </state>
-    </system>
+    <option name="testRunner" value="GRADLE" />
+    <option name="delegatedBuild" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharacterDecoder.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="193">
-              <caret line="437" selection-start-line="437" selection-end-line="437" />
-              <folding>
-                <element signature="e#18265#18423#1" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.9/1409aca6a4293a7ca8dbd60281c3211a195dd39a/gdx-1.9.9-sources.jar!/com/badlogic/gdx/graphics/Color.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="24" column="13" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
+    <leaf>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/desktop/src/com/decoder/jacky/desktop/DesktopLauncher.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="11" column="47" selection-start-line="11" selection-start-column="47" selection-end-line="11" selection-end-column="47" />
+            <state relative-caret-position="140">
+              <caret line="9" column="66" selection-start-line="9" selection-start-column="66" selection-end-line="9" selection-end-column="66" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="149">
+              <caret line="61" column="17" selection-start-line="61" selection-start-column="17" selection-end-line="61" selection-end-column="17" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#453#461#0" expanded="true" />
+                <element signature="e#1170#1171#0" expanded="true" />
+                <element signature="e#1191#1192#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java">
+        <entry file="file://$PROJECT_DIR$/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="394">
-              <caret line="145" selection-start-line="145" selection-end-line="145" />
+            <state relative-caret-position="460">
+              <caret line="23" column="47" lean-forward="true" selection-start-line="23" selection-start-column="47" selection-end-line="23" selection-end-column="47" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.9/1409aca6a4293a7ca8dbd60281c3211a195dd39a/gdx-1.9.9-sources.jar!/com/badlogic/gdx/files/FileHandle.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="299">
+              <caret line="367" column="16" selection-start-line="367" selection-start-column="16" selection-end-line="367" selection-end-column="16" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#15938#15939#0" expanded="true" />
+                <element signature="e#15978#15979#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -165,85 +114,54 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/JsonBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="30" column="46" selection-start-line="30" selection-start-column="46" selection-end-line="30" selection-end-column="46" />
+            <state relative-caret-position="351">
+              <caret line="103" column="42" selection-start-line="103" selection-start-column="42" selection-end-line="103" selection-end-column="42" />
               <folding>
-                <element signature="e#496#497#0" expanded="true" />
-                <element signature="e#537#538#0" expanded="true" />
-                <element signature="e#678#679#0" expanded="true" />
-                <element signature="e#718#719#0" expanded="true" />
-                <element signature="e#2967#2968#0" expanded="true" />
-                <element signature="e#3024#3025#0" expanded="true" />
+                <element signature="e#2980#2981#0" expanded="true" />
+                <element signature="e#3037#3038#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl/1.9.9/222a6367453012e0da3caa48b892b5c8ecc42dc/gdx-backend-lwjgl-1.9.9-sources.jar!/com/badlogic/gdx/backends/lwjgl/LwjglApplication.java">
+        <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharactDecoder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1936">
-              <caret line="125" column="42" selection-start-line="125" selection-start-column="42" selection-end-line="125" selection-end-column="42" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl.lwjgl/lwjgl/2.9.2/4d114b5ef3ad3bf571b1f090cb00855991067e0b/lwjgl-2.9.2-sources.jar!/org/lwjgl/opengl/Display.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="12738">
-              <caret line="638" selection-start-line="638" selection-end-line="638" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl/1.9.9/222a6367453012e0da3caa48b892b5c8ecc42dc/gdx-backend-lwjgl-1.9.9-sources.jar!/com/badlogic/gdx/backends/lwjgl/LwjglFiles.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="572">
-              <caret line="51" selection-start-line="51" selection-end-line="51" />
+            <state relative-caret-position="400">
+              <caret line="68" column="23" selection-start-line="68" selection-start-column="23" selection-end-line="68" selection-end-column="23" />
               <folding>
-                <element signature="e#1761#1762#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#14690#14691#0" expanded="true" />
+                <element signature="method#readSkin#0;class#SpineCharactDecoder#0" />
+                <element signature="method#readAttachment#0;class#SpineCharactDecoder#0" />
+                <element signature="method#readVertices#0;class#SpineCharactDecoder#0" />
+                <element signature="method#readFloatArray#0;class#SpineCharactDecoder#0" />
+                <element signature="method#readShortArray#0;class#SpineCharactDecoder#0" />
+                <element signature="method#readAnimation#0;class#SpineCharactDecoder#0" />
+                <element signature="e#24736#27807#1" />
+                <element signature="e#27905#30517#1" />
+                <element signature="e#31140#31175#0" />
+                <element signature="e#32009#32045#0" />
+                <element signature="e#32980#33016#0" />
+                <element signature="e#35905#35974#0" />
+                <element signature="e#38680#38781#0" />
+                <element signature="method#readCurve#0;class#SpineCharactDecoder#0" />
+                <element signature="method#setCurve#0;class#SpineCharactDecoder#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl/1.9.9/222a6367453012e0da3caa48b892b5c8ecc42dc/gdx-backend-lwjgl-1.9.9-sources.jar!/com/badlogic/gdx/backends/lwjgl/LwjglFileHandle.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="28" selection-start-line="28" selection-end-line="28" />
-              <folding>
-                <element signature="e#1145#1146#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/javax/swing/JFileChooser.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1870">
-              <caret line="133" column="28" selection-start-line="133" selection-start-column="28" selection-end-line="133" selection-end-column="28" />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
-  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharactDecoder.java" />
+        <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/JsonBuilder.java" />
         <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharactDecoder.java" />
         <option value="$PROJECT_DIR$/desktop/src/com/decoder/jacky/desktop/DesktopLauncher.java" />
-        <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/JsonBuilder.java" />
         <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java" />
-        <option value="$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharacterDecoder.java" />
       </list>
     </option>
   </component>
@@ -251,17 +169,16 @@
     <option name="LAST_EDITED_MODULE_NAME" />
     <option name="LAST_EDITED_TAB_NAME" />
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="60" />
-    <option name="width" value="940" />
-    <option name="height" value="1087" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="953" />
+    <option name="width" value="974" />
+    <option name="height" value="1047" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
       <profile-state />
     </entry>
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectReloadState">
     <option name="STATE" value="0" />
   </component>
@@ -270,52 +187,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="azurlanespine" type="b2602c69:ProjectViewProjectNode" />
-              <item name="azurlanespine" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-            </path>
-            <path>
-              <item name="azurlanespine" type="b2602c69:ProjectViewProjectNode" />
-              <item name="azurlanespine" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="azurlanespine" type="b2602c69:ProjectViewProjectNode" />
-              <item name="azurlanespine" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="azurlanespine" type="b2602c69:ProjectViewProjectNode" />
-              <item name="azurlanespine" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="production" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="azurlanespine" type="b2602c69:ProjectViewProjectNode" />
-              <item name="azurlanespine" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="production" type="462c0819:PsiDirectoryNode" />
-              <item name="desktop" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="azurlanespine" type="b2602c69:ProjectViewProjectNode" />
-              <item name="azurlanespine" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="output" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="azurlanespine" type="b2602c69:ProjectViewProjectNode" />
-              <item name="azurlanespine" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="output" type="462c0819:PsiDirectoryNode" />
-              <item name="build_char_140_whitew" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
+      <pane id="ProjectPane" />
       <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
@@ -327,7 +199,7 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="MemberChooser.sorted" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/core/assets" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/build.gradle" />
     <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -358,7 +230,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.DesktopLauncher-1">
+  <component name="RunManager" selected="Gradle.D:/jacky/azurlanespine/build.gradle">
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
       <Port>5050</Port>
@@ -370,40 +242,10 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="DesktopLauncher-1" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="com.decoder.jacky.desktop.DesktopLauncher" />
-      <module name="azurlanespine.desktop.main" />
-      <option name="PROGRAM_PARAMETERS" value="&quot;D:\Users\qz228\Desktop\output\build_char_002_amiya.skel.txt&quot;" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.decoder.jacky.desktop.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="DesktopLauncher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.decoder.jacky.desktop.DesktopLauncher" />
       <module name="desktop" />
-      <option name="PROGRAM_PARAMETERS" value="&quot;D:\Users\qz228\Desktop\output\char_140_whitew\build_char_140_whitew.skel.txt&quot;" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.decoder.jacky.desktop.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="DesktopLauncher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.decoder.jacky.desktop.DesktopLauncher" />
-      <module name="azurlanespine.desktop.main" />
-      <option name="PROGRAM_PARAMETERS" value="&quot;D:\新建文件夹\income\guider.json&quot;" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.decoder.jacky.desktop.*" />
@@ -470,20 +312,12 @@
         <option name="BuildArtifacts" enabled="false" />
       </method>
     </configuration>
-    <list>
-      <item itemvalue="Application.DesktopLauncher" />
-      <item itemvalue="Application.DesktopLauncher-1" />
-      <item itemvalue="Gradle.D:/jacky/azurlanespine/build.gradle" />
-      <item itemvalue="JAR Application.azurlanespine.jar" />
-      <item itemvalue="JAR Application.azurlanespine.jar (1)" />
-    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.DesktopLauncher-1" />
+        <item itemvalue="Gradle.D:/jacky/azurlanespine/build.gradle" />
+        <item itemvalue="JAR Application.azurlanespine.jar (1)" />
         <item itemvalue="JAR Application.azurlanespine.jar" />
         <item itemvalue="Application.DesktopLauncher" />
-        <item itemvalue="Application.DesktopLauncher" />
-        <item itemvalue="Gradle.D:/jacky/azurlanespine/build.gradle" />
       </list>
     </recent_temporary>
   </component>
@@ -501,94 +335,85 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="60" y="0" width="940" height="1087" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.33484676" />
+      <window_info id="Image Layers" />
+      <window_info id="Designer" />
+      <window_info id="UI Designer" />
+      <window_info id="Capture Tool" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16044776" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Image Layers" order="2" />
-      <window_info id="Designer" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Capture Tool" order="5" />
-      <window_info id="Favorites" order="6" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" weight="0.32936078" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32615715" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39181915" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32936078" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Terminal" order="7" />
-      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="bottom" id="Messages" order="10" weight="0.3272921" />
-      <window_info anchor="bottom" id="Build" order="11" weight="0.3326157" />
+      <window_info anchor="right" id="Palette" />
+      <window_info anchor="right" id="Theme Preview" />
+      <window_info anchor="right" id="Maven" />
+      <window_info anchor="right" id="Capture Analysis" />
+      <window_info anchor="right" id="Palette&#9;" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="right" id="Maven" order="4" />
-      <window_info anchor="right" id="Theme Preview" order="5" />
-      <window_info anchor="right" id="Capture Analysis" order="6" />
-      <window_info anchor="right" id="Palette&#9;" order="7" />
-      <window_info anchor="right" id="Gradle" order="8" />
     </layout>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java</url>
-          <line>139</line>
-          <properties />
-          <option name="timeStamp" value="91" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java</url>
-          <line>143</line>
-          <properties />
-          <option name="timeStamp" value="92" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java</url>
-          <line>145</line>
-          <properties />
-          <option name="timeStamp" value="105" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharacterDecoder.java</url>
-          <line>436</line>
-          <properties />
-          <option name="timeStamp" value="110" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharacterDecoder.java</url>
-          <line>437</line>
-          <properties />
-          <option name="timeStamp" value="111" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-    <watches-manager>
-      <configuration name="Application">
-        <watch expression="args" language="JAVA" />
-        <watch expression="decoder" language="JAVA" />
-      </configuration>
-    </watches-manager>
-  </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/JsonBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="103" column="42" selection-start-line="103" selection-start-column="42" selection-end-line="103" selection-end-column="42" />
+          <folding>
+            <element signature="e#2980#2981#0" expanded="true" />
+            <element signature="e#3037#3038#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/core/assets/WatchDog.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharactDecoder.java" />
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/jre/lib/rt.jar!/sun/launcher/LauncherHelper.class" />
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/src.zip!/java/lang/Class.java" />
+    <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharactDecoder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="68" column="23" selection-start-line="68" selection-start-column="23" selection-end-line="68" selection-end-column="23" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#14690#14691#0" expanded="true" />
+            <element signature="method#readSkin#0;class#SpineCharactDecoder#0" />
+            <element signature="method#readAttachment#0;class#SpineCharactDecoder#0" />
+            <element signature="method#readVertices#0;class#SpineCharactDecoder#0" />
+            <element signature="method#readFloatArray#0;class#SpineCharactDecoder#0" />
+            <element signature="method#readShortArray#0;class#SpineCharactDecoder#0" />
+            <element signature="method#readAnimation#0;class#SpineCharactDecoder#0" />
+            <element signature="e#24736#27807#1" />
+            <element signature="e#27905#30517#1" />
+            <element signature="e#31140#31175#0" />
+            <element signature="e#32009#32045#0" />
+            <element signature="e#32980#33016#0" />
+            <element signature="e#35905#35974#0" />
+            <element signature="e#38680#38781#0" />
+            <element signature="method#readCurve#0;class#SpineCharactDecoder#0" />
+            <element signature="method#setCurve#0;class#SpineCharactDecoder#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.9/1409aca6a4293a7ca8dbd60281c3211a195dd39a/gdx-1.9.9-sources.jar!/com/badlogic/gdx/files/FileHandle.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6798">
+        <state relative-caret-position="299">
           <caret line="367" column="16" selection-start-line="367" selection-start-column="16" selection-end-line="367" selection-end-column="16" />
           <folding>
             <element signature="e#15938#15939#0" expanded="true" />
@@ -597,149 +422,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
-          <caret line="23" column="47" selection-start-line="23" selection-start-column="47" selection-end-line="23" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/azurlanespine.iml">
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/jre/lib/rt.jar!/sun/launcher/LauncherHelper.class">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.9/1409aca6a4293a7ca8dbd60281c3211a195dd39a/gdx-1.9.9-sources.jar!/com/badlogic/gdx/utils/SerializationException.java">
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/src.zip!/java/lang/Class.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="27" column="11" selection-start-line="27" selection-start-column="11" selection-end-line="27" selection-end-column="11" />
-          <folding>
-            <element signature="e#1149#1150#0" expanded="true" />
-            <element signature="e#1177#1178#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gradlew">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="17" column="8" lean-forward="true" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/azurlanespine.iws">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-12288" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/output/build_char_140_whitew/build_char_140_whitew.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.9/1409aca6a4293a7ca8dbd60281c3211a195dd39a/gdx-1.9.9-sources.jar!/com/badlogic/gdx/utils/FloatArray.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="61" selection-start-line="61" selection-end-line="61" />
-          <folding>
-            <element signature="e#2540#2541#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/io/DataInputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9218">
-          <caret line="444" column="23" selection-start-line="444" selection-start-column="23" selection-end-line="444" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.9/1409aca6a4293a7ca8dbd60281c3211a195dd39a/gdx-1.9.9-sources.jar!/com/badlogic/gdx/graphics/Color.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="24" column="13" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
+        <state relative-caret-position="189">
+          <caret line="1783" column="24" selection-start-line="1783" selection-start-column="24" selection-end-line="1783" selection-end-column="24" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/desktop/src/com/decoder/jacky/desktop/DesktopLauncher.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="47" selection-start-line="11" selection-start-column="47" selection-end-line="11" selection-end-column="47" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl/1.9.9/222a6367453012e0da3caa48b892b5c8ecc42dc/gdx-backend-lwjgl-1.9.9-sources.jar!/com/badlogic/gdx/backends/lwjgl/LwjglApplication.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1936">
-          <caret line="125" column="42" selection-start-line="125" selection-start-column="42" selection-end-line="125" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl.lwjgl/lwjgl/2.9.2/4d114b5ef3ad3bf571b1f090cb00855991067e0b/lwjgl-2.9.2-sources.jar!/org/lwjgl/opengl/Display.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="12738">
-          <caret line="638" selection-start-line="638" selection-end-line="638" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl/1.9.9/222a6367453012e0da3caa48b892b5c8ecc42dc/gdx-backend-lwjgl-1.9.9-sources.jar!/com/badlogic/gdx/backends/lwjgl/LwjglFiles.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="572">
-          <caret line="51" selection-start-line="51" selection-end-line="51" />
-          <folding>
-            <element signature="e#1761#1762#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl/1.9.9/222a6367453012e0da3caa48b892b5c8ecc42dc/gdx-backend-lwjgl-1.9.9-sources.jar!/com/badlogic/gdx/backends/lwjgl/LwjglFileHandle.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="28" selection-start-line="28" selection-end-line="28" />
-          <folding>
-            <element signature="e#1145#1146#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/javax/swing/JFileChooser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1870">
-          <caret line="133" column="28" selection-start-line="133" selection-start-column="28" selection-end-line="133" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/JsonBuilder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="30" column="46" selection-start-line="30" selection-start-column="46" selection-end-line="30" selection-end-column="46" />
-          <folding>
-            <element signature="e#496#497#0" expanded="true" />
-            <element signature="e#537#538#0" expanded="true" />
-            <element signature="e#678#679#0" expanded="true" />
-            <element signature="e#718#719#0" expanded="true" />
-            <element signature="e#2967#2968#0" expanded="true" />
-            <element signature="e#3024#3025#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/SpineCharacterDecoder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="437" selection-start-line="437" selection-end-line="437" />
-          <folding>
-            <element signature="e#18265#18423#1" />
-          </folding>
+        <state relative-caret-position="140">
+          <caret line="9" column="66" selection-start-line="9" selection-start-column="66" selection-end-line="9" selection-end-column="66" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/core/src/com/decoder/jacky/AzurLaneSpineCharacterDecoder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="394">
-          <caret line="145" selection-start-line="145" selection-end-line="145" />
+        <state relative-caret-position="149">
+          <caret line="61" column="17" selection-start-line="61" selection-start-column="17" selection-end-line="61" selection-end-column="17" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#453#461#0" expanded="true" />
+            <element signature="e#1170#1171#0" expanded="true" />
+            <element signature="e#1191#1192#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="460">
+          <caret line="23" column="47" lean-forward="true" selection-start-line="23" selection-start-column="47" selection-end-line="23" selection-end-column="47" />
         </state>
       </provider>
     </entry>
@@ -753,7 +468,7 @@
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.2" />
+                <option value="0.19885057" />
                 <option value="0.5" />
               </list>
             </option>

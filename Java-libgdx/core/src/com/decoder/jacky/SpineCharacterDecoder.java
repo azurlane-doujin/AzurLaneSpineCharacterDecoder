@@ -83,12 +83,12 @@ public class SpineCharacterDecoder {
     private Map<Integer, String> eventName;
 
     private Map<String, FloatArray> attachVertices;
-    private Map<String, String> slotAttach;
+    private Map<String, Map<String,String>> slotAttach;
+    private Map<String, String> attachBones;
 
-    String version;
+    private String version;
 
     String name;
-    boolean failAnimation=false;
 
     String decoder(FileHandle binaryFile) {
         name = binaryFile.nameWithoutExtension().replace(".skel", "");
@@ -130,6 +130,7 @@ public class SpineCharacterDecoder {
                 return new String(chars, 0, charCount);
             }
         };
+
         boolean nonessential;
         try {
             JsonBuilder.Dict skeleton = basicDict.addKeyDict("skeleton");
@@ -170,7 +171,8 @@ public class SpineCharacterDecoder {
             eventName = new HashMap<Integer, String>();
 
             attachVertices = new HashMap<String, FloatArray>();
-            slotAttach = new HashMap<String, String>();
+            slotAttach = new HashMap<String, Map<String, String>>();
+            attachBones = new HashMap<String, String>();
 
 
             JsonBuilder.List Bones = basicDict.addKeyList("bones");
@@ -229,9 +231,9 @@ public class SpineCharacterDecoder {
                         int val = input.readInt(true);
                         int index = val == 0 ? 1 : val;
                         String boneName;
-                        if (bonesName.values().contains(slotName))
-                            boneName = slotName;
-                        else
+                     //  if (bonesName.values().contains(slotName))
+                     //      boneName = slotName;
+                     //  else
                             boneName = bonesName.get(index);
 
                         int colorInt = input.readInt();
@@ -259,7 +261,8 @@ public class SpineCharacterDecoder {
                         if (attachmentName != null)
                             slot.addKeyValue("attachment", attachmentName);
                         slotsName.put(i, slotName);
-                        slotAttach.put(slotName, attachmentName);
+                        slotAttach.put(slotName, new HashMap<String, String>());
+                        attachBones.put(attachmentName,boneName);
                     }
                     slots.insert(slot);
                 }
@@ -381,7 +384,7 @@ public class SpineCharacterDecoder {
             JsonBuilder.Dict skins = basicDict.addKeyDict("skins");
             {
                 JsonBuilder.Dict defaultSkin = skins.addKeyDict("default");
-                readSkin(input, defaultSkin, nonessential, 0, name);
+                readSkin(input, defaultSkin, nonessential, 0, "default");
                 if (defaultSkin != null) {
                     skins.insert(defaultSkin);
 
@@ -417,25 +420,26 @@ public class SpineCharacterDecoder {
             }
             basicDict.insert(events);
 
-        try {
+
             JsonBuilder.Dict animations = basicDict.addKeyDict("animations");
-            {
+            try{
                 for (int i = 0, n = input.readInt(true); i < n; i++)
                     readAnimation(input, input.readString(), animations);
+                basicDict.insert(animations);
+            }catch (Throwable event){
+
+                System.out.printf("fail to load %s's animations",name);
+                event.printStackTrace();
+                basicDict.insertEmpty(animations);
             }
-            basicDict.insert(animations);
-        }catch (Throwable event){
-            failAnimation=true;
-            System.out.printf("error to load %s's animations",name);
-        }
+
 
             builder.insert(basicDict);
         } catch (IOException info) {
             return String.format("{\"error\":%s}", info.toString());
         }
-        String value=builder.toString();
-        if (failAnimation)value=value.substring(0,value.length()-14)+"}";
-        return value;
+
+        return builder.toString();
 
     }
 
@@ -447,19 +451,22 @@ public class SpineCharacterDecoder {
         for (int i = 0; i < slotCount; i++) {
             int slotIndex = input.readInt(true);
             String slotName = slotsName.get(slotIndex);
-            if (slotName.startsWith("head")) {
-                System.out.println(slotName);
-            }
-            JsonBuilder.Dict attach = skin.addKeyDict(slotName);
+          //  if (slotName.startsWith("head")) {
+          //      System.out.println(slotName);
+          //  }
+            JsonBuilder.Dict attaches = skin.addKeyDict(slotName);
             for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
                 String attachName = input.readString();
 
-                readAttachment(input, attach, attachName, nonessential);
+                readAttachment(input, attaches, attachName, nonessential);
 
-                skinsName.put(index, name);
+                slotAttach.get(slotName).put(attachName,attachName);
+
             }
-            skin.insert(attach);
+            skin.insert(attaches);
         }
+
+        skinsName.put(index, name);
     }
 
     private void readAttachment(DataInput input, JsonBuilder.Dict attachments, String attachmentName, boolean nonessential) throws IOException {
@@ -661,11 +668,11 @@ public class SpineCharacterDecoder {
 
             int boneCount = input.readInt(true);
             vertices.addValue(boneCount);
-            array.add(boneCount);
+           // array.add(boneCount);
             for (int ii = 0; ii < boneCount; ii++) {
                 tempInt = input.readInt(true);
                 vertices.addValue(tempInt);
-                array.add(tempInt);
+                //array.add(tempInt);
                 temp = input.readFloat();
                 vertices.addValue(temp);
                 array.add(temp);
@@ -987,17 +994,20 @@ public class SpineCharacterDecoder {
                         for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
 
                             int slotIndex = input.readInt(true);
-                            JsonBuilder.Dict slot = perDeform.addKeyDict(slotsName.get(slotIndex));
+                            String slotName=slotsName.get(slotIndex);
+                            JsonBuilder.Dict slot = perDeform.addKeyDict(slotName);
                             {
                                 for (int iii = 0, nnn = input.readInt(true); iii < nnn; iii++) {
-                                    String timeLineName = input.readString();
-                                    JsonBuilder.List timeline = slot.addKeyList(timeLineName);
+                                    //attach name
+                                    String attachName = input.readString();
+                                    JsonBuilder.List timeline = slot.addKeyList(attachName);
                                     {
-                                        boolean weighted = slotAttach.get(slotsName.get(slotIndex)) != null && slotAttach.get(slotsName.get(slotIndex)).equals(timeLineName);
-                                        float[] vertices = attachVertices.get(timeLineName)==null?new float[0]:attachVertices.get(timeLineName).toArray();
+                                        boolean weighted =attachBones.get(slotAttach.get(slotName).get(attachName))!=null;
+                                        float[] vertices = attachVertices.get(attachName)==null?new float[4]:attachVertices.get(attachName).toArray();
                                         int deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
 
                                         int frameCount = input.readInt(true);
+
                                         for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
                                             JsonBuilder.Dict perInfo = timeline.addDict();
                                             {
@@ -1010,9 +1020,11 @@ public class SpineCharacterDecoder {
                                                 else {
                                                     deform = new float[deformLength];
                                                     int start = input.readInt(true);
+
                                                     end += start;
-                                                    if (end>deformLength||end<0)end=deformLength;
-                                                    if (start>deformLength||start<0)start=deformLength;
+                                                    if (end > deformLength || end < 0) end = deformLength;
+                                                    if (start > deformLength || start < 0) start = deformLength;
+
                                                     for (int v = start; v < end; v++)
                                                         deform[v] = input.readFloat();
                                                     if (!weighted) {
@@ -1020,10 +1032,10 @@ public class SpineCharacterDecoder {
                                                             deform[v] += vertices[v];
                                                     }
                                                     perInfo.addKeyValue("offset", start);
-
+                                                }
                                                     if (frameIndex < frameCount - 1)
                                                         readCurve(input, perInfo);
-                                                }
+
                                                 JsonBuilder.List verticesValue = perInfo.addKeyList("vertices");
                                                 {
                                                     for (float v : deform)
