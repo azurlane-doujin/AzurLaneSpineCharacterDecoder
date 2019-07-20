@@ -3,11 +3,11 @@ package com.decoder.jacky;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -24,57 +24,43 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 	private List<String> args = new ArrayList<String>();
 	private OrthographicCamera camera;
 
-	private SpineCharacterDecoder decoder;
-	private AtlasLoader atlasLoader;
+	private Array<PerSpineKeeper> spineKeeperArray;
 
 	private int index = 0;
 	private String path;
 	private boolean hasDone = false;
 	private boolean jsonType = false;
 
-	private String val="";
 	private int size = 0;
 	private String[] array;
 
-	private String[] type = new String[]{"skeleton", "Texture", "Atlas"};
-	private int indexType = 0;
+	private boolean nullType;
+	private boolean realGo = false;
+	private boolean isGiven = false;
 
-	private boolean nullType
-	;private 		boolean realGo=false;
-	private boolean readAtlas=false;
-
-	private float[][] colors={
-		{1,1,1,1},
-		{0,1,0,1},
-		{1,0,0,1},
-		{0,0,1,1},
+	private float[][] colors = {
+			{1, 1, 1, 1},
+			{0, 1, 0, 1},
+			{1, 0, 0, 1},
+			{0, 0, 1, 1},
 	};
-	private String name;
 
 	public AzurLaneSpineCharacterDecoder(String[] args) {
 		this.path = System.getProperty("user.dir");
-		if (args.length>0){
+		if (args.length > 0) {
 			if (args.length == 1 && args[0].endsWith(".json")) {
 				jsonType = true;
 				this.args.add(args[0]);
-			}
-			if (args.length==2&&args[0].equals("-a")){
-				readAtlas=true;
-				this.args.add(args[1]);
-			}
-
-			else {
+			} else {
 				for (String arg : args) {
 					if (arg.endsWith(".skel.txt") || arg.endsWith(".skel"))
 						this.args.add(arg);
 				}
 				size = this.args.size();
 			}
-
-			nullType=false;
-		}
-		else {
-			nullType=true;
+			nullType = false;
+		} else {
+			nullType = true;
 		}
 	}
 
@@ -85,91 +71,45 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false);
 
-		decoder = new SpineCharacterDecoder();
-
-
+		spineKeeperArray = new Array<PerSpineKeeper>();
 		if (jsonType) {
 			JsonReader reader = new JsonReader();
-
 			JsonValue jsonValue = reader.parse(Gdx.files.absolute(args.get(0)));
-
 			System.out.println();
 			array = jsonValue.asStringArray();
 			size = array.length;
-
 		}
-		if (readAtlas)
-		{
-
-			atlasLoader=new AtlasLoader(Gdx.files.absolute(args.get(0)));
-		}
-
-		//path="D:\\Users\\qz228\\Desktop";
+		path = System.getProperty("user.dir");
 	}
 
 	@Override
 	public void render() {
 		float[] showColor;
-		if (nullType) showColor=colors[2];
-		else if (hasDone)showColor=colors[3];
-		else if (realGo)showColor=colors[1];
-		else showColor=colors[0];
-
-		Gdx.gl.glClearColor(showColor[0],showColor[1],showColor[2],showColor[3]);
+		if (nullType) showColor = colors[2];
+		else if (hasDone) showColor = colors[3];
+		else if (realGo) showColor = colors[1];
+		else showColor = colors[0];
+		//bg color work
+		Gdx.gl.glClearColor(showColor[0], showColor[1], showColor[2], showColor[3]);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		batch.draw(img, Gdx.graphics.getWidth() / 2 - img.getWidth() / 2, Gdx.graphics.getHeight() / 2 - img.getHeight() / 2);
 		batch.end();
-
-		if (readAtlas)
-		{
-			atlasLoader.load();
-		}
-		if (!nullType&&realGo){
+		//main work
+		if (!nullType && realGo) {
 			if (index < size) {
-				FileHandle output;
-				if (jsonType) {
-					String fileName = array[index];
-					if (fileName != null && (fileName.endsWith(".skel.txt") || fileName.endsWith(".skel"))) {
-						indexType = 0;
-						FileHandle input = Gdx.files.absolute(fileName);
-						if (input.exists())
-							val = decoder.decoder(input);
-					} else if (fileName != null && (fileName.toLowerCase().endsWith(".png"))) {
-						indexType = 1;
-						FileHandle file = Gdx.files.absolute(fileName);
-						output = Gdx.files.absolute(path + "/output/" + file.nameWithoutExtension());
-						file.copyTo(output);
-					} else if (fileName != null && (fileName.toLowerCase().endsWith(".atlas.txt") || fileName.toLowerCase().endsWith(".atlas"))) {
-						indexType = 2;
-						FileHandle file = Gdx.files.absolute(fileName);
-						String file_name = file.nameWithoutExtension().replace(".atlas", "");
-						output = Gdx.files.absolute(path + "/output/" + file_name + "/" + file_name + ".atlas");
-						file.copyTo(output);
+				if (!isGiven) {
+					if (jsonType) {
+						spineKeeperArray = PerSpineKeeper.loadFromArray(array);
+					} else {
+						spineKeeperArray = PerSpineKeeper.loadFromArray(args);
 					}
+					isGiven = true;
+					size=spineKeeperArray.size;
 				}
-				else
-					val = decoder.decoder(Gdx.files.absolute(args.get(index)));
-
-				float a = ((index + 1) * 100f) / size;
-				if (val!=null&&val.startsWith("{\"error\"")){
-					System.out.printf("error to load %s\t%d\n",name,index+1);
-					val="";
-				}
-				System.out.printf("finish:\t%s\ttype:%s\n\tN0.%d,\n\t%.2f%%\n", name, type[indexType], index + 1, a);
-
-				if (val != null) {
-
-					output = Gdx.files.absolute(path + "/output/" + decoder.name + "/" + decoder.name + ".json");
-
-					output.writeString(val, false);
-
-					name=decoder.name;
-					decoder=new SpineCharacterDecoder();
-					val=null;
-				}
+				spineKeeperArray.get(index).setSavePath(Gdx.files.absolute(path));
+				spineKeeperArray.get(index).TranslateWork();
 				index += 1;
-
 			} else {
 				if (!hasDone) {
 					System.out.println("Done");
@@ -177,50 +117,49 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 				}
 			}
 		}
-		if(nullType){
-			if(Gdx.input.isKeyPressed(Input.Keys.O)&&Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-			{
-				try{
-					JFileChooser fileChooser =new JFileChooser();
+		if (nullType) {
+			//input files
+			if (Gdx.input.isKeyPressed(Input.Keys.O) && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+				try {
+					JFileChooser fileChooser = new JFileChooser();
 					fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 					fileChooser.setMultiSelectionEnabled(true);
 
 					fileChooser.setFileFilter(new FileFilter() {
 						@Override
 						public boolean accept(File f) {
-							String fileName=f.getAbsolutePath();
-							return fileName.endsWith(".skel.txt") || fileName.endsWith(".skel")||f.isDirectory();
+							String fileName = f.getAbsolutePath().toLowerCase();
+							return fileName.endsWith(".skel.txt") || fileName.endsWith(".skel") ||
+									fileName.endsWith(".atlas.txt") || fileName.endsWith(".atlas") ||
+									fileName.endsWith(".png") || f.isDirectory();
 						}
 
 						@Override
 						public String getDescription() {
-							return "Spine骨架文件 (*.skel;*.skel.txt)";
+							return "Spine相关文件 (*.skel;*.skel.txt;*.atlas;*.atlas.txt;*.png)";
 						}
 					});
 
-					int val=fileChooser.showOpenDialog(null);
-					if(val==JFileChooser.APPROVE_OPTION)
-					{
+					int val = fileChooser.showOpenDialog(null);
+					if (val == JFileChooser.APPROVE_OPTION) {
 						args.clear();
-						File[] files=fileChooser.getSelectedFiles();
+						File[] files = fileChooser.getSelectedFiles();
 						for (File file : files) {
 							args.add(file.getAbsolutePath());
 						}
-						size=files.length;
-						nullType=false;
+						size = files.length;
+						nullType = false;
 					}
-				}catch (Throwable ex){
+				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}
-
 			}
-
 		}
-		if (!realGo){
-			if(Gdx.input.isKeyPressed(Input.Keys.S)&&Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-			{
-				try{
-					JFileChooser dirChooser =new JFileChooser();
+		if (!realGo) {
+			//save path
+			if (Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+				try {
+					JFileChooser dirChooser = new JFileChooser();
 					dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
 					dirChooser.setFileFilter(new FileFilter() {
@@ -235,19 +174,18 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 						}
 					});
 
-					int val=dirChooser.showSaveDialog(null);
-					if(val==JFileChooser.APPROVE_OPTION) {
+					int val = dirChooser.showSaveDialog(null);
+					if (val == JFileChooser.APPROVE_OPTION) {
 						this.path = dirChooser.getSelectedFile().getAbsolutePath();
 					}
-				}catch (Throwable ex){
+				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}
 
 			}
-			if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
-				realGo=true;
+			if (Gdx.input.isKeyPressed(Input.Keys.SPACE))
+				realGo = true;
 		}
-
 	}
 
 	@Override

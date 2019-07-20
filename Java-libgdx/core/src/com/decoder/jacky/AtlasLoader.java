@@ -1,72 +1,70 @@
 package com.decoder.jacky;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.FloatArray;
+import com.badlogic.gdx.utils.Array;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AtlasLoader {
 
-    private final FileHandle atlasFile;
-
-    private String inputString;
-
-    private final Pattern pattern=Pattern.compile(
+    private static Pattern value = Pattern.compile(
+            "(.+\\n" +
+                    "\\s{2}rotate:\\s(?:ture|false)\\n" +
+                    "\\s{2}xy:\\s\\d+,\\s\\d+\\n" +
+                    "\\s{2}size:\\s\\d+,\\s\\d+\\n" +
+                    "\\s{2}orig:\\s\\d+,\\s\\d+\\n" +
+                    "\\s{2}offset:\\s0,\\s0\\n" +
+                    "\\s{2}index:\\s-1\\n)");
+    private static Pattern perValue = Pattern.compile(
             ".+\\n" +
-            "\\s(2)rotate: (false|true)\\n" +
-            "\\s(2)xy: \\d+, \\d+\\n" +
-            "\\s(2)size: \\d+, \\d+\\n" +
-            "\\s(2)orig: \\d+, \\d+\\n" +
-            "\\s(2)offset: \\d+, \\d+\\n" +
-            "\\s(2)index: -?\\d+\\n");
-    private final  Pattern name =Pattern.compile("^.+\\n");
-    private final Pattern xy=Pattern.compile("\\s(2)xy: \\d+, \\d+\\n");
-    private final Pattern size=Pattern.compile("\\s(2)size: \\d+, \\d+\\n");
+                    "\\s{2}rotate:\\s(?:ture|false)\\n" +
+                    "\\s{2}xy:\\s(\\d+),\\s(\\d+)\\n\\s{2}size:\\s(\\d+),\\s(\\d+)\\n" +
+                    "\\s{2}orig:\\s\\d+,\\s\\d+\\n\\s{2}offset:\\s0,\\s0\\n\\s{2}index:\\s-1\\n");
 
-    public AtlasLoader(FileHandle atlasFile)
-    {
-        this.atlasFile=atlasFile;
-    }
+    Map<String, Array<Integer>> getRegion(FileHandle atlasFile) throws FileNotFoundException {
+        if (!atlasFile.exists())
+            throw new FileNotFoundException("file:" + atlasFile.path() + "do not exist");
+        Map<String, Array<Integer>> reValue = new HashMap<String, Array<Integer>>();
 
-    public Map<String, FloatArray> load()
-    {
-        inputString=atlasFile.readString();
+        String fileData = atlasFile.readString().replace("\r\n", "\n");
+        Matcher match = value.matcher(fileData);
+        while (match.find()) {
+            //System.out.println(match.group(0));
+            int x, y, w, h;
+            String region = match.group();
+            String[] perLine = region.split("\n\\s{2}");
+            String name = perLine[0];
+            String xy = perLine[2], size = perLine[3];
+            int post_1 = xy.lastIndexOf(","), post_2 = size.lastIndexOf(",");
+            x = Integer.parseInt(xy.substring(4, post_1));
+            y = Integer.parseInt(xy.substring(post_1 + 2));
+            w = Integer.parseInt(size.substring(6, post_2));
+            h = Integer.parseInt(size.substring(post_2 + 2));
 
-        Map<String, FloatArray> information=new HashMap<String, FloatArray>();
-        String[] pattens =inputString.split("none\\n")[1].split("-1\\n");
+            Array<Integer> temp = new Array<Integer>();
+            temp.add(x);
+            temp.add(y);
+            temp.add(w);
+            temp.add(h);
 
-        for (String value :pattens) {
-            String[] info=value.split("\\n\\s\\s");
-            String slotName = info[0];
-            String xy=info[2];
-            xy=xy.substring(4);
-            String[] x_y=xy.split(",\\s");
-            int x=Integer.parseInt(x_y[0]),
-                    y=Integer.parseInt(x_y[1]);
-
-            String size=info[3];
-            size=size.substring(6);
-            String[] size_wh=size.split(",\\s");
-            float width=Integer.parseInt(size_wh[0]),
-                    height=Integer.parseInt(size_wh[1]);
-
-            FloatArray array=new FloatArray(4);
-            array.add(x);
-            array.add(y);
-            array.add(width);
-            array.add(height);
-
-            information.put(slotName,array);
-
+            reValue.put(name, temp);
+            /*System.out.println(name);
+            System.out.println(xy);
+            System.out.println(size);
+            System.out.println(x);
+            System.out.println(y);
+            System.out.println(w);
+            System.out.println(h);
+            */
 
         }
 
-        return information;
+
+        return reValue;
     }
-
-
 }
