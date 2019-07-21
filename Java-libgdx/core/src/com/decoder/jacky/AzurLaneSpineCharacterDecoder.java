@@ -44,6 +44,7 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 			{1, 0, 0, 1},
 			{0, 0, 1, 1},
 	};
+	float scale=1.0f;
 
 	public AzurLaneSpineCharacterDecoder(String[] args) {
 		this.path = System.getProperty("user.dir");
@@ -80,6 +81,8 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 			size = array.length;
 		}
 		path = System.getProperty("user.dir");
+
+		scale=Float.parseFloat(Gdx.files.internal("core/assets/scale.txt").readString());
 	}
 
 	@Override
@@ -100,12 +103,13 @@ public class AzurLaneSpineCharacterDecoder extends ApplicationAdapter {
 			if (index < size) {
 				if (!isGiven) {
 					if (jsonType) {
-						spineKeeperArray = PerSpineKeeper.loadFromArray(array);
+						spineKeeperArray = PerSpineKeeper.loadFromArray(array,scale);
 					} else {
-						spineKeeperArray = PerSpineKeeper.loadFromArray(args);
+						spineKeeperArray = PerSpineKeeper.loadFromArray(args,scale);
 					}
 					isGiven = true;
 					size=spineKeeperArray.size;
+
 				}
 				spineKeeperArray.get(index).setSavePath(Gdx.files.absolute(path));
 				spineKeeperArray.get(index).TranslateWork();

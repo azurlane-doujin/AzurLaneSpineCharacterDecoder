@@ -20,7 +20,7 @@ public class PerSpineKeeper {
     private boolean isAble;
 
     public String name;
-
+    public float scale=1.0f;
     public PerSpineKeeper() {
     }
 
@@ -105,9 +105,9 @@ public class PerSpineKeeper {
                 String jsonString, path = savePath.path();
 
                 if (hasAtlas)
-                    jsonString = decoder.decoder(skelPath, atlasInfo);
+                    jsonString = decoder.decoder(skelPath, atlasInfo,scale);
                 else
-                    jsonString = decoder.decoder(skelPath, null);
+                    jsonString = decoder.decoder(skelPath, null,scale);
 
                 output = Gdx.files.absolute(path + "/output/" + decoder.name + "/" + decoder.name + ".json");
                 output.writeString(jsonString, false);
@@ -116,14 +116,13 @@ public class PerSpineKeeper {
 
                 if (jsonString != null && jsonString.startsWith("{\"error\""))
                     System.out.printf("error to load %s!\n", name);
-                System.out.printf("finish:\t%s\n", name);
-
+                System.out.printf("finish:\t%s\nsave at:\n\t%s\n", name,output.path());
             }
         }
         return true;
     }
 
-    static Array<PerSpineKeeper> loadFromArray(String[] args) {
+    static Array<PerSpineKeeper> loadFromArray(String[] args,float scale) {
         Map<String, PerSpineKeeper> array = new HashMap<String, PerSpineKeeper>();
         String path, name;
         FileHandle fileHandle;
@@ -139,6 +138,7 @@ public class PerSpineKeeper {
                 PerSpineKeeper keeper = new PerSpineKeeper();
                 keeper.set(path);
                 keeper.name=name;
+                keeper.scale=scale;
                 array.put(name, keeper);
             }
         }
@@ -152,12 +152,12 @@ public class PerSpineKeeper {
 
         return keeperArray;
     }
-    static Array<PerSpineKeeper> loadFromArray(List<String> args) {
+    static Array<PerSpineKeeper> loadFromArray(List<String> args,float scale) {
         String []temp=new String[args.size()];
         for (int i = 0; i <args.size(); i++) {
             temp[i]=args.get(i);
         }
-        return loadFromArray(temp);
+        return loadFromArray(temp,scale);
     }
 
 

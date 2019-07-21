@@ -14,17 +14,9 @@ public class AtlasLoader {
 
     private static Pattern value = Pattern.compile(
             "(.+\\n" +
-                    "\\s{2}rotate:\\s(?:ture|false)\\n" +
+                    "\\s{2}rotate:\\s(?:true|false)\\n" +
                     "\\s{2}xy:\\s\\d+,\\s\\d+\\n" +
-                    "\\s{2}size:\\s\\d+,\\s\\d+\\n" +
-                    "\\s{2}orig:\\s\\d+,\\s\\d+\\n" +
-                    "\\s{2}offset:\\s0,\\s0\\n" +
-                    "\\s{2}index:\\s-1\\n)");
-    private static Pattern perValue = Pattern.compile(
-            ".+\\n" +
-                    "\\s{2}rotate:\\s(?:ture|false)\\n" +
-                    "\\s{2}xy:\\s(\\d+),\\s(\\d+)\\n\\s{2}size:\\s(\\d+),\\s(\\d+)\\n" +
-                    "\\s{2}orig:\\s\\d+,\\s\\d+\\n\\s{2}offset:\\s0,\\s0\\n\\s{2}index:\\s-1\\n");
+                    "\\s{2}size:\\s\\d+,\\s\\d+\\n)");
 
     Map<String, Array<Integer>> getRegion(FileHandle atlasFile) throws FileNotFoundException {
         if (!atlasFile.exists())
@@ -33,13 +25,15 @@ public class AtlasLoader {
 
         String fileData = atlasFile.readString().replace("\r\n", "\n");
         Matcher match = value.matcher(fileData);
+        int count=0;
         while (match.find()) {
+            count++;
             //System.out.println(match.group(0));
             int x, y, w, h;
             String region = match.group();
             String[] perLine = region.split("\n\\s{2}");
             String name = perLine[0];
-            String xy = perLine[2], size = perLine[3];
+            String xy = perLine[2].replace("\n",""), size = perLine[3].replace("\n","");
             int post_1 = xy.lastIndexOf(","), post_2 = size.lastIndexOf(",");
             x = Integer.parseInt(xy.substring(4, post_1));
             y = Integer.parseInt(xy.substring(post_1 + 2));
@@ -61,10 +55,7 @@ public class AtlasLoader {
             System.out.println(w);
             System.out.println(h);
             */
-
         }
-
-
         return reValue;
     }
 }
