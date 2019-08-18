@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactManager">
     <artifact type="jar" name="azurlanespine:jar">
-      <output-path>$PROJECT_DIR$/out/artifacts/azurlanespine_jar</output-path>
+      <output-path>$PROJECT_DIR$/out/artifacts/azurlanespine_jar-1.0</output-path>
       <root id="archive" name="azurlanespine.jar">
         <element id="directory" name="META-INF">
           <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />

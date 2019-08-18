@@ -1,5 +1,7 @@
 package com.decoder.jacky;
 
+import com.badlogic.gdx.utils.Array;
+
 public class JsonBuilder {
     private StringBuilder builder = new StringBuilder();
 
@@ -38,7 +40,7 @@ public class JsonBuilder {
         }
 
         public void addKeyValue(String key, float value) {
-            builder.append("\"").append(key).append("\":").append(value).append(",");
+            builder.append(String.format("\"%s\":%.1f",key,value));
         }
 
         public void addKeyValue(String key, int value) {
@@ -49,6 +51,29 @@ public class JsonBuilder {
             builder.append("\"").append(key).append("\":").append(value).append(",");
         }
 
+        public void addKeyArray(String key,Array array){
+            List list=addKeyList(key);
+            for (int i = 0; i < array.size; i++) {
+                list.addValue(array.get(i).toString());
+            }
+            insert(list);
+        }
+        public void addKeyArray(String key,float[] array)
+        {
+            List list=addKeyList(key);
+            for (float v : array) {
+                list.addValue(v);
+            }
+            insert(list);
+        }
+        public void addKeyArray(String key,short[] array)
+        {
+            List list=addKeyList(key);
+            for (short v : array) {
+                list.addValue(v);
+            }
+            insert(list);
+        }
         public Dict addKeyDict(String key) {
             builder.append("\"").append(key).append("\":");
             return new Dict(builder.length());
@@ -91,19 +116,15 @@ public class JsonBuilder {
         }
 
         public void addValue(float value) {
-            builder.append(value).append(",");
+            builder.append(String.format("%.1f",value)).append(",");
 
+        }
+        public void addValue(int value){
+            builder.append(value).append(",");
         }
 
         public void addValue(boolean value) {
             builder.append(value).append(",");
-        }
-
-        public void addValue(float[] value){
-
-        }
-        public void addValue(int[] value){
-
         }
 
         public Dict addDict() {

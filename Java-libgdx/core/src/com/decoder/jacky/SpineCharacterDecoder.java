@@ -1,14 +1,17 @@
 package com.decoder.jacky;
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.*;
+import com.decoder.jacky.SkeletonData.*;
+import com.decoder.jacky.SkeletonData.Attachment.VertexAttachment;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.zip.ZipException;
 
-public class SpineCharacterDecoder {
+class SpineCharacterDecoder {
 
     private static final int BONE_ROTATE = 0;
     private static final int BONE_TRANSLATE = 1;
@@ -23,64 +26,21 @@ public class SpineCharacterDecoder {
     private static final int PATH_SPACING = 1;
     private static final int PATH_MIX = 2;
 
-    static public final int CURVE_LINEAR = 0;
+    //static public final int CURVE_LINEAR = 0;
     private static final int CURVE_STEPPED = 1;
     private static final int CURVE_BEZIER = 2;
-
-    private final String[] TransformMode = new String[]{
-            "normal",
-            "onlyTranslation",
-            "noRotationOrReflection",
-            "noScale",
-            "noScaleOrReflection"};
-
-    private final String[] BlendMode = new String[]{
-            "normal",
-            "additive",
-            "multiply",
-            "screen",
-    };
-    private final String[] PositionMode = new String[]{
-            "fixed",
-            "percent"};
-    private final String[] SpacingMode = new String[]{
-            "length",
-            "fixed",
-            "percent"};
-    private final String[] RotateMode = new String[]{
-            "tangent",
-            "chain",
-            "chainScale"
-    };
-
-    private final String[] AttachmentType = new String[]{
-            "region",
-            "boundingbox",
-            "mesh",
-            "linkedmesh",
-            "path",
-            "point",
-            "clipping"};
 
     private JsonBuilder builder = new JsonBuilder();
     private JsonBuilder.Dict basicDict = builder.setBasicTypeAsDict();
 
-    private Map<Integer, String> slotsName;
-    private Map<Integer, String> bonesName;
-    private Map<Integer, String> skinsName;
-    private Map<Integer, String> IK_Name;
-    private Map<Integer, String> transformsName;
-    private Map<Integer, String> pathsName;
-    private Map<Integer, String> eventName;
-
-    private Map<String, FloatArray> attachVertices;
-    private Map<String, String> slotAttach;
-
-    String version;
-
     String name;
+    private boolean failAnimation=false;
 
-    String decoder(FileHandle binaryFile) {
+    SpineCharacterDecoder() {
+    }
+
+    String decoder(FileHandle binaryFile, TextureAtlas atlas, float scale) {
+        SkeletonData skeletonData=new SkeletonData();
         name = binaryFile.nameWithoutExtension().replace(".skel", "");
         DataInput input = new DataInput(binaryFile.read(512)) {
             private char[] chars = new char[32];
@@ -121,542 +81,126 @@ public class SpineCharacterDecoder {
             }
         };
         boolean nonessential;
+        if (atlas!=null)
+            System.out.printf("get atlas,%s \n",atlas.toString());
         try {
-            JsonBuilder.Dict skeleton = basicDict.addKeyDict("skeleton");
-            {
-                String hash = input.readString();
-                version = input.readString();
-                float width = input.readFloat();
-                float height = input.readFloat();
+            System.out.println("\tnow load basic information");
+            nonessential=skeletonData.loadData(input,basicDict);
 
-                if (hash == null || hash.isEmpty())
-                    skeleton.addKeyValue("hash", "null");
-                skeleton.addKeyValue("hash", hash != null ? hash : "null");
-                if (version == null || version.isEmpty())
-                    skeleton.addKeyValue("spine", "null");
-                skeleton.addKeyValue("spine", version != null ? version : "null");
-
-                skeleton.addKeyValue("width", width);
-                skeleton.addKeyValue("height", height);
-
-                nonessential = input.readBoolean();
-
-                if (nonessential) {
-                    float fps = input.readFloat();
-                    String imagesPath = input.readString();
-                    if (imagesPath == null || imagesPath.isEmpty()) imagesPath = "null";
-                    skeleton.addKeyValue("fps", fps);
-                    skeleton.addKeyValue("images", imagesPath);
-                }
-            }
-            basicDict.insert(skeleton);
-
-            bonesName = new HashMap<Integer, String>();
-            slotsName = new HashMap<Integer, String>();
-            skinsName = new HashMap<Integer, String>();
-            IK_Name = new HashMap<Integer, String>();
-            transformsName = new HashMap<Integer, String>();
-            pathsName = new HashMap<Integer, String>();
-            eventName = new HashMap<Integer, String>();
-
-            attachVertices = new HashMap<String, FloatArray>();
-            slotAttach = new HashMap<String, String>();
-
-
+            //bone
+            System.out.println("\tnow load bones information");
             JsonBuilder.List Bones = basicDict.addKeyList("bones");
             {
                 for (int i = 0, n = input.readInt(true); i < n; i++) {
-                    JsonBuilder.Dict bone = Bones.addDict();
-                    {
-                        String name = input.readString();
-
-                        String parent = i == 0 ? null : bonesName.get(input.readInt(true));
-
-                        float rotation = input.readFloat();
-                        float x = input.readFloat();
-                        float y = input.readFloat();
-                        float scaleX = input.readFloat();
-                        float scaleY = input.readFloat();
-                        float shearX = input.readFloat();
-                        float shearY = input.readFloat();
-                        float length = input.readFloat();
-                        int transformMode = input.readInt(true);
-
-                        bone.addKeyValue("name", name != null ? name : "null");
-                        if (parent != null)
-                            bone.addKeyValue("parent", parent);
-                        bone.addKeyValue("x", x);
-                        bone.addKeyValue("y", y);
-                        bone.addKeyValue("rotation", rotation);
-                        bone.addKeyValue("scaleX", scaleX);
-                        bone.addKeyValue("scaleY", scaleY);
-                        bone.addKeyValue("shearX", shearX);
-                        bone.addKeyValue("shearY", shearY);
-                        bone.addKeyValue("length", length);
-                        bone.addKeyValue("transform", this.TransformMode[transformMode >= TransformMode.length ? TransformMode.length - 1 : transformMode]);
-
-                        if (nonessential) {
-                            int color = input.readInt();
-                            String color_s = Integer.toHexString(color);
-                            bone.addKeyValue("color", color_s.substring(2));
-                        }
-                        bonesName.put(i, name);
-                    }
-                    Bones.insert(bone);
-
+                    BoneData data= BoneData.loadData(input,nonessential,skeletonData,i);
+                    if (data!=null)
+                        data.buildJson(Bones);
                 }
             }
             basicDict.insert(Bones);
 
-
+            //slot
+            System.out.println("\tnow load slots information");
             JsonBuilder.List slots = basicDict.addKeyList("slots");
             {
                 for (int i = 0, n = input.readInt(true); i < n; i++) {
-                    JsonBuilder.Dict slot = slots.addDict();
-                    {
-                        String slotName = input.readString();
-                        int val = input.readInt(true);
-                        int index = val == 0 ? 1 : val;
-                        String boneName;
-                        if (bonesName.values().contains(slotName))
-                            boneName = slotName;
-                        else
-                            boneName = bonesName.get(index);
-
-                        int color = input.readInt();
-                        String color_s = Integer.toHexString(color).substring(2);
-
-                        if (version.startsWith("3.6")) {
-                            int darkColor = input.readInt();
-                            String darkColor_s = null;
-                            if (darkColor != -1)
-                                darkColor_s = Integer.toHexString(color);
-                            if (darkColor_s != null)
-                                slot.addKeyValue("dark", darkColor_s);
-
-                        }
-
-                        String attachmentName = input.readString();
-
-                        int blendMode = input.readInt(true);
-                        slot.addKeyValue("blend", this.BlendMode[blendMode >= this.BlendMode.length ? BlendMode.length - 1 : blendMode]);
-
-                        slot.addKeyValue("name", slotName != null ? slotName : "null");
-                        slot.addKeyValue("bone", boneName != null ? boneName : "null");
-                        slot.addKeyValue("color", color_s);
-
-                        if (attachmentName != null)
-                            slot.addKeyValue("attachment", attachmentName);
-                        slotsName.put(i, slotName);
-                        slotAttach.put(slotName, attachmentName);
-                    }
-                    slots.insert(slot);
+                    SlotData data =SlotData.loadData(input,nonessential,skeletonData,i);
+                    if (data!=null)
+                        data.buildJson(slots);
                 }
             }
             basicDict.insert(slots);
 
+            //ik
+            System.out.println("\tnow load IK information");
             JsonBuilder.List IKs = basicDict.addKeyList("ik");
             {
                 for (int i = 0, n = input.readInt(true); i < n; i++) {
-                    JsonBuilder.Dict ik = IKs.addDict();
-                    {
-                        String name = input.readString();
-                        int order = input.readInt(true);
-                        ik.addKeyValue("name", name != null ? name : "null");
-                        ik.addKeyValue("order", order);
-                        JsonBuilder.List bones = ik.addKeyList("bones");
-                        {
-                            for (int j = 0, m = input.readInt(true); j < m; j++) {
-                                bones.addValue(bonesName.get(input.readInt(true)));
-                            }
-                        }
-                        ik.insert(bones);
-                        ik.addKeyValue("target", bonesName.get(input.readInt(true)));
-                        ik.addKeyValue("mix", input.readFloat());
-                        ik.addKeyValue("bendPositive", input.readByte());
-                        IK_Name.put(i, name);
-                    }
-                    IKs.insert(ik);
+                    IkConstraintData data =IkConstraintData.loadData(input, skeletonData);
+                    if (data!=null)
+                        data.buildJson(IKs);
                 }
             }
             basicDict.insert(IKs);
 
+            //transform
+            System.out.println("\tnow load transform information");
             JsonBuilder.List transforms = basicDict.addKeyList("transform");
             {
                 for (int i = 0, n = input.readInt(true); i < n; i++) {
-                    JsonBuilder.Dict transform = transforms.addDict();
-                    {
-                        String name = input.readString();
-                        transform.addKeyValue("name", name != null ? name : "null");
-                        transform.addKeyValue("order", input.readInt(true));
-                        JsonBuilder.List bones = transform.addKeyList("bones");
-                        {
-                            for (int j = 0, m = input.readInt(true); j < m; j++) {
-                                bones.addValue(bonesName.get(input.readInt(true)));
-                            }
-                        }
-                        transform.insert(bones);
-                        transform.addKeyValue("target", bonesName.get(input.readInt(true)));
-                        if (version.startsWith("3.6")) {
-                            transform.addKeyValue("local", input.readBoolean());
-                            transform.addKeyValue("relative", input.readBoolean());
-                        }
-                        transform.addKeyValue("offsetRotation", input.readFloat());
-                        transform.addKeyValue("offsetX", input.readFloat());
-                        transform.addKeyValue("offsetY", input.readFloat());
-                        transform.addKeyValue("offsetScaleX", input.readFloat());
-                        transform.addKeyValue("offsetScaleY", input.readFloat());
-                        transform.addKeyValue("offsetShearY", input.readFloat());
-                        transform.addKeyValue("rotateMix", input.readFloat());
-                        transform.addKeyValue("translateMix", input.readFloat());
-                        transform.addKeyValue("scaleMix", input.readFloat());
-                        transform.addKeyValue("shearMix", input.readFloat());
-                        transformsName.put(i, name);
-                    }
-                    transforms.insert(transform);
+                    TransformConstraintData data=TransformConstraintData.loadData(input,nonessential,skeletonData,i);
+                    if(data!=null)
+                        data.buildJson(transforms);
                 }
             }
             basicDict.insert(transforms);
 
+            //path
+            System.out.println("\tnow load path information");
             JsonBuilder.List paths = basicDict.addKeyList("path");
             {
                 for (int i = 0, n = input.readInt(true); i < n; i++) {
-                    JsonBuilder.Dict path = paths.addDict();
-                    {
-                        String name = input.readString();
-                        path.addKeyValue("name", name != null ? name : "null");
-                        path.addKeyValue("order", input.readInt(true));
-                        JsonBuilder.List bones = path.addKeyList("bones");
-                        {
-                            for (int j = 0, m = input.readInt(true); j < m; j++) {
-                                bones.addValue(bonesName.get(input.readInt(true)));
-                            }
-                        }
-                        path.insert(bones);
-
-
-                        path.addKeyValue("target",slotsName.get(input.readInt(true)));
-
-                        int positionModeIndex = input.readInt(true);
-                        int spacingModeIndex = input.readInt(true);
-                        int rotateModeIndex = input.readInt(true);
-                        String positionMode = PositionMode[positionModeIndex >= PositionMode.length ? 1 : positionModeIndex];
-                        String spacingMode = SpacingMode[spacingModeIndex >= SpacingMode.length ? 2 : spacingModeIndex];
-                        String rotateMode = RotateMode[rotateModeIndex >= RotateMode.length ? 2 : rotateModeIndex];
-                        path.addKeyValue("positionMode", positionMode);
-                        path.addKeyValue("spacingMode", spacingMode);
-                        path.addKeyValue("rotateMode", rotateMode);
-
-
-                        path.addKeyValue("offset", input.readFloat());
-                        float position = input.readFloat();
-                        if (positionMode.equals("fixed"))
-                            position *= 1;
-                        path.addKeyValue("position", position);
-                        float spacing = input.readFloat();
-                        if (spacingMode.equals("length") || spacingMode.equals("fixed"))
-                            spacing *= 1;
-                        path.addKeyValue("spacing", spacing);
-                        path.addKeyValue("rotateMix", input.readFloat());
-                        path.addKeyValue("translateMix", input.readFloat());
-                        pathsName.put(i, name);
-                    }
-                    paths.insert(path);
+                    PathConstraintData data =PathConstraintData.loadData(input, skeletonData);
+                    if (data!=null)
+                        data.buildJson(paths);
                 }
             }
             basicDict.insert(paths);
 
+            //skin
+            System.out.println("\tnow load skins information");
+            JsonBuilder.Dict skins = basicDict.addKeyDict("skins");
+            {
+                Skin defaultSkin=Skin.loadData(input,nonessential,skeletonData,0,"default",atlas,scale);
+                if (defaultSkin!=null)
+                    defaultSkin.buildJson(skins);
+                for (int i = 0, n = input.readInt(true); i < n; i++) {
+                    String name = input.readString();
+                    Skin skin=Skin.loadData(input,nonessential,skeletonData,i+1,name,atlas,scale);
+                    if (skin!=null)
+                        skin.buildJson(skins);
+                }
+            }
+            basicDict.insert(skins);
 
-            //    JsonBuilder.Dict skins = basicDict.addKeyDict("skins");
-            //    {
-            //        JsonBuilder.Dict defaultSkin = skins.addKeyDict("default");
-            //        readSkin(input, defaultSkin, nonessential, 0, name);
-            //        if (defaultSkin != null) {
-            //            skins.insert(defaultSkin);
-//
-            //        }
-//
-            //        for (int i = 0, n = input.readInt(true); i < n; i++) {
-            //            String name = input.readString();
-            //            JsonBuilder.Dict skin = skins.addKeyDict(name);
-            //            readSkin(input, skin, nonessential, i + 1, name);
-            //            if (skin != null) {
-            //                skins.insert(skin);
-            //            }
-            //        }
-            //    }
-            //    basicDict.insert(skins);
-//
-//
-            //    JsonBuilder.Dict events = basicDict.addKeyDict("events");
-            //    {
-            //        for (int i = 0, n = input.readInt(true); i < n; i++) {
-            //            String name = input.readString();
-            //            JsonBuilder.Dict event = events.addKeyDict(name);
-            //            {
-            //                event.addKeyValue("int", input.readInt(false));
-            //                event.addKeyValue("float", input.readFloat());
-            //                String string = input.readString();
-            //                event.addKeyValue("string", string != null ? string : "null");
-//
-            //            }
-            //            events.insert(event);
-            //            eventName.put(i, name);
-            //        }
-            //    }
-            //    basicDict.insert(events);
-//
-//
-            //    JsonBuilder.Dict animations = basicDict.addKeyDict("animations");
-            //    {
-            //        for (int i = 0, n = input.readInt(true); i < n; i++)
-            //            readAnimation(input, input.readString(), animations);
-            //    }
-            //    basicDict.insert(animations);
+            //event
+            System.out.println("\tnow load events information");
+            JsonBuilder.Dict events = basicDict.addKeyDict("events");
+            {
+                for (int i = 0, n = input.readInt(true); i < n; i++) {
+                    EventData data=EventData.loadData(input,skeletonData);
+                    if (data!=null)
+                        data.buildJson(events);
+                }
+            }
+            basicDict.insert(events);
+
+            //animation
+        try {
+            System.out.println("\tnow load animations information");
+            JsonBuilder.Dict animations = basicDict.addKeyDict("animations");
+            {
+                for (int i = 0, n = input.readInt(true); i < n; i++)
+                    readAnimation(input, input.readString(), animations, skeletonData);
+            }
+            basicDict.insert(animations);
+        }catch (Exception event){
+            failAnimation=true;
+            System.out.printf("fail to load 【%s】's animations\t",name);
+        }
 
             builder.insert(basicDict);
         } catch (IOException info) {
             return String.format("{\"error\":%s}", info.toString());
         }
-        return builder.toString();
+        String value=builder.toString();
+        if (failAnimation)value=value.substring(0,value.length()-14)+"}";
+        return value;
 
     }
 
 
-    private void readSkin(DataInput input, JsonBuilder.Dict skin, boolean nonessential, int index, String name) throws IOException {
-        int slotCount = input.readInt(true);
-        if (slotCount == 0) return;
-
-        for (int i = 0; i < slotCount; i++) {
-            input.readInt(true);
-
-            for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
-                String attachName = input.readString();
-                JsonBuilder.Dict attach = skin.addKeyDict(attachName);
-
-                readAttachment(input, attach, attachName, nonessential);
-
-                skin.insert(attach);
-
-                skinsName.put(index, name);
-            }
-        }
-    }
-
-    private void readAttachment(DataInput input, JsonBuilder.Dict attachments, String attachmentName, boolean nonessential) throws IOException {
-
-        String name = input.readString();
-        if (name == null) name = attachmentName;
-
-        JsonBuilder.Dict attach = attachments.addKeyDict(name);
-        {
-            int type = input.readByte();
-            String typeName = AttachmentType[type >= AttachmentType.length ? AttachmentType.length - 1 : type];
-
-            attach.addKeyValue("type", typeName);
-
-            switch (type) {
-                case 0: {
-                    attach.addKeyValue("path", input.readString());
-                    attach.addKeyValue("rotation", input.readFloat());
-                    attach.addKeyValue("x", input.readFloat());
-                    attach.addKeyValue("y", input.readFloat());
-                    attach.addKeyValue("scaleX", input.readFloat());
-                    attach.addKeyValue("scaleY", input.readFloat());
-                    attach.addKeyValue("width", input.readFloat());
-                    attach.addKeyValue("height", input.readFloat());
-                    attach.addKeyValue("color", Integer.toHexString(input.readInt()));
-                    break;
-                }
-                case 1: {
-                    int vertexCount = input.readInt(true);
-                    attach.addKeyValue("vertexCount", vertexCount);
-                    JsonBuilder.List vertices = attach.addKeyList("vertices");
-                    readVertices(input, vertexCount, vertices, attachmentName);
-
-                    attach.insert(vertices);
-                    attach.addKeyValue("color", nonessential ? input.readInt() : 0);
-                    break;
-                }
-                case 2: {
-                    String path = input.readString();
-                    if (path == null) path = name;
-                    int color = input.readInt();
-                    int vertexCount = input.readInt(true);
-
-                    attach.addKeyValue("path", path);
-                    attach.addKeyValue("color", Integer.toHexString(color));
-                    attach.addKeyValue("vertexCount", vertexCount);
-
-                    JsonBuilder.List uvs = attach.addKeyList("uvs");
-                    readFloatArray(input, vertexCount << 1, 1, uvs);
-                    attach.insert(uvs);
-
-                    JsonBuilder.List triangles = attach.addKeyList("triangles");
-                    readShortArray(input, triangles);
-                    attach.insert(triangles);
-
-                    JsonBuilder.List vertices = attach.addKeyList("vertices");
-                    readVertices(input, vertexCount, vertices, attachmentName);
-                    attach.insert(vertices);
-
-                    attach.addKeyValue("hullLength", input.readInt(true));
-                    JsonBuilder.List edges = attach.addKeyList("edges");
-                    float width = 0, height = 0;
-                    if (nonessential) {
-                        readShortArray(input, edges);
-                        width = input.readFloat();
-                        height = input.readFloat();
-                    }
-                    attach.insert(edges);
-                    attach.addKeyValue("width", width);
-                    attach.addKeyValue("height", height);
-
-                    break;
-                }
-                case 3: {
-                    String path = input.readString();
-                    if (path == null) path = name;
-                    int color = input.readInt();
-                    String skinName = input.readString();
-                    String parent = input.readString();
-                    boolean inheritDeform = input.readBoolean();
-                    float width = 0, height = 0;
-                    if (nonessential) {
-                        width = input.readFloat();
-                        height = input.readFloat();
-                    }
-
-                    attach.addKeyValue("path", path);
-                    attach.addKeyValue("color", Integer.toHexString(color));
-                    attach.addKeyValue("skin", skinName);
-                    attach.addKeyValue("parent", parent);
-                    attach.addKeyValue("deform", inheritDeform);
-                    attach.addKeyValue("width", width);
-                    attach.addKeyValue("heigh", height);
-
-                    break;
-                }
-                case 4: {
-                    boolean closed = input.readBoolean();
-                    boolean constantSpeed = input.readBoolean();
-                    int vertexCount = input.readInt(true);
-
-                    attach.addKeyValue("closed", closed);
-                    attach.addKeyValue("constantSpeed", constantSpeed);
-                    attach.addKeyValue("vertexCount", vertexCount);
-
-
-                    JsonBuilder.List vertices = attach.addKeyList("vertices");
-                    readVertices(input, vertexCount, vertices, attachmentName);
-                    attach.insert(vertices);
-
-                    float[] lengths = new float[vertexCount / 3];
-                    JsonBuilder.List length = attach.addKeyList("lengths");
-                    for (int i = 0, n = lengths.length; i < n; i++) {
-                        lengths[i] = input.readFloat();
-                        length.addValue(lengths[i]);
-                    }
-                    attach.insert(length);
-                    int color = nonessential ? input.readInt() : 0;
-                    attach.addKeyValue("color", Integer.toHexString(color));
-
-                    break;
-                }
-                case 5: {
-                    float rotation = input.readFloat();
-                    float x = input.readFloat();
-                    float y = input.readFloat();
-                    int color = nonessential ? input.readInt() : 0;
-
-                    attach.addKeyValue("x", x);
-                    attach.addKeyValue("y", y);
-                    attach.addKeyValue("rotation", rotation);
-                    attach.addKeyValue("color", Integer.toHexString(color));
-
-                    break;
-                }
-                case 6: {
-                    int endSlotIndex = input.readInt(true);
-                    int vertexCount = input.readInt(true);
-
-                    attach.addKeyValue("end", slotsName.get(endSlotIndex));
-                    attach.addKeyValue("vertexCount", vertexCount);
-
-                    JsonBuilder.List vertices = attach.addKeyList("vertices");
-                    readVertices(input, vertexCount, vertices, attachmentName);
-                    attach.insert(vertices);
-                    int color = nonessential ? input.readInt() : 0;
-
-                    attach.addKeyValue("color", Integer.toHexString(color));
-
-                    break;
-                }
-            }
-        }
-        attachments.insert(attach);
-    }
-
-    private void readVertices(DataInput input, int vertexCount, JsonBuilder.List vertices, String attachName) throws IOException {
-        int verticesLength = vertexCount << 1;
-        FloatArray array = new FloatArray();
-        if (!input.readBoolean()) {
-            array = readFloatArray(input, verticesLength, 1f, vertices);
-            attachVertices.put(attachName, array);
-            return;
-        }
-        float temp;
-        for (int i = 0; i < vertexCount; i++) {
-
-            int boneCount = input.readInt(true);
-            vertices.addValue((float) boneCount);
-            array.add(boneCount);
-            for (int ii = 0; ii < boneCount; ii++) {
-                temp=(float) input.readInt(true);
-                vertices.addValue(temp);
-                array.add(temp);
-                temp = input.readFloat();
-                vertices.addValue(temp);
-                array.add(temp);
-                temp = input.readFloat();
-                vertices.addValue(temp);
-                array.add(temp);
-                temp = input.readFloat();
-                vertices.addValue(temp);
-                array.add(temp);
-            }
-        }
-        attachVertices.put(attachName, array);
-    }
-
-    private FloatArray readFloatArray(DataInput input, int n, float scale, JsonBuilder.List floatArray) throws IOException {
-        float[] array = new float[n];
-        if (scale == 1) {
-            for (int i = 0; i < n; i++)
-                array[i] = input.readFloat();
-        } else {
-            for (int i = 0; i < n; i++)
-                array[i] = input.readFloat() * scale;
-        }
-        for (float v : array) {
-            floatArray.addValue(v);
-        }
-        return new FloatArray(array);
-    }
-
-    private void readShortArray(DataInput input, JsonBuilder.List shortArray) throws IOException {
-        int n = input.readInt(true);
-        short[] array = new short[n];
-        for (int i = 0; i < n; i++)
-            array[i] = input.readShort();
-
-        for (short v :
-                array) {
-            shortArray.addValue(v);
-        }
-    }
-
-    private void readAnimation(DataInput input, String name, JsonBuilder.Dict Animations) {
+    private void readAnimation(DataInput input, String name, JsonBuilder.Dict Animations, SkeletonData data) {
         JsonBuilder.Dict animation = Animations.addKeyDict(name);
         try {
             // Slot timelines.
@@ -666,15 +210,15 @@ public class SpineCharacterDecoder {
 
                 for (int i = 0; i < val; i++) {
                     int slotIndex = input.readInt(true);
-                    String slotName = slotsName.get(slotIndex);
-                    JsonBuilder.Dict slot = slots.addKeyDict(slotName);
+                    SlotData slotData=data.slots.get(slotIndex);
+                    JsonBuilder.Dict slot = slots.addKeyDict(slotData.name);
                     for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
                         int timelineType = input.readByte();
                         int frameCount = input.readInt(true);
 
                         switch (timelineType) {
                             case SLOT_ATTACHMENT: {
-                                JsonBuilder.List translate = slot.addKeyList("translate");
+                                JsonBuilder.List translate = slot.addKeyList("attachment");
 
                                 for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
                                     JsonBuilder.Dict perInfo = translate.addDict();
@@ -692,9 +236,12 @@ public class SpineCharacterDecoder {
                                     JsonBuilder.Dict perInfo = color.addDict();
                                     {
                                         float time = input.readFloat();
-                                        String color_ = Integer.toHexString(input.readInt());
+                                        int colorInt = input.readInt();
+                                        Color perColor = new Color();
+                                        Color.rgba8888ToColor(perColor, colorInt);
+                                        perInfo.addKeyValue("color", perColor.toString());
                                         perInfo.addKeyValue("time", time);
-                                        perInfo.addKeyValue("color", color_);
+
                                         if (frameIndex < frameCount - 1) readCurve(input, perInfo);
                                     }
                                     color.insert(perInfo);
@@ -708,11 +255,17 @@ public class SpineCharacterDecoder {
                                     for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
                                         JsonBuilder.Dict perInfo = twoColor.addDict();
                                         float time = input.readFloat();
-                                        String light = Integer.toHexString(input.readInt());
-                                        String dark = Integer.toHexString(input.readInt());
+                                        int light = input.readInt();
+                                        int dark = input.readInt();
 
-                                        perInfo.addKeyValue("light", light);
-                                        perInfo.addKeyValue("dark", dark);
+                                        Color perColor = new Color();
+                                        Color.rgba8888ToColor(perColor, light);
+                                        perInfo.addKeyValue("light", perColor.toString());
+
+                                        perColor = new Color();
+                                        Color.rgba8888ToColor(perColor, dark);
+                                        perInfo.addKeyValue("dark", perColor.toString());
+
                                         perInfo.addKeyValue("time", time);
 
                                         if (frameIndex < frameCount - 1) readCurve(input, perInfo);
@@ -738,8 +291,8 @@ public class SpineCharacterDecoder {
 
                 for (int i = 0; i < val; i++) {
                     int boneIndex = input.readInt(true);
-                    String boneName = bonesName.get(boneIndex);
-                    JsonBuilder.Dict bone = bones.addKeyDict(boneName);
+                    BoneData boneData=data.bones.get(boneIndex);
+                    JsonBuilder.Dict bone = bones.addKeyDict(boneData.name);
 
                     for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
                         int timelineType = input.readByte();
@@ -795,9 +348,8 @@ public class SpineCharacterDecoder {
 
                 for (int i = 0; i < val; i++) {
                     int index = input.readInt(true);
-                    String ikName = IK_Name.get(index);
-
-                    JsonBuilder.List ik = iks.addKeyList(ikName);
+                    IkConstraintData ikConstraintData=data.ikConstraints.get(index);
+                    JsonBuilder.List ik = iks.addKeyList(ikConstraintData.name);
                     {
                         int frameCount = input.readInt(true);
                         for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
@@ -824,7 +376,7 @@ public class SpineCharacterDecoder {
 
                 for (int i = 0; i < val; i++) {
                     int index = input.readInt(true);
-                    String transformName = transformsName.get(index);
+                    String transformName = data.transformConstraints.get(index).name;
 
                     JsonBuilder.List transform = transforms.addKeyList(transformName);
                     {
@@ -855,7 +407,7 @@ public class SpineCharacterDecoder {
                 {
                     for (int i = 0, n = input.readInt(true); i < n; i++) {
                         int index = input.readInt(true);
-                        String pathName = pathsName.get(index);
+                        String pathName = data.pathConstraints.get(index).name;
 
                         JsonBuilder.Dict path = paths.addKeyDict(pathName);
                         {
@@ -919,24 +471,28 @@ public class SpineCharacterDecoder {
             val = input.readInt(true);
             if (val != 0) {
                 JsonBuilder.Dict deforms = animation.addKeyDict("deform");
+
                 for (int i = 0; i < val; i++) {
-                    String deformName = skinsName.get(input.readInt(true));
-                    JsonBuilder.Dict perDeform = deforms.addKeyDict(deformName);
+                    Skin skin=data.skin.get(input.readInt(true));
+                    JsonBuilder.Dict perDeform = deforms.addKeyDict(skin.name);
                     {
                         for (int ii = 0, nn = input.readInt(true); ii < nn; ii++) {
 
                             int slotIndex = input.readInt(true);
-                            JsonBuilder.Dict slot = perDeform.addKeyDict(slotsName.get(slotIndex));
+                            SlotData slotData=data.slots.get(slotIndex);
+                            JsonBuilder.Dict slot = perDeform.addKeyDict(slotData.name);
                             {
                                 for (int iii = 0, nnn = input.readInt(true); iii < nnn; iii++) {
-                                    String timeLineName = input.readString();
-                                    JsonBuilder.List timeline = slot.addKeyList(timeLineName);
-                                    {
-                                        boolean weighted = slotAttach.get(slotsName.get(slotIndex)).equals(timeLineName);
-                                        float[] vertices = attachVertices.get(timeLineName).toArray();
-                                        int deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
+                                    String at_name=input.readString();
+                                    VertexAttachment attachment = (VertexAttachment)skin.getAttachment(slotIndex,at_name );
+                                    boolean weighted;
+                                    weighted = attachment.bones != null;
+                                    float[] vertices = attachment.vertices;
+                                    int deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
+                                    int frameCount = input.readInt(true);
 
-                                        int frameCount = input.readInt(true);
+                                    JsonBuilder.List timeline = slot.addKeyList(attachment.name);
+                                    {
                                         for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
                                             JsonBuilder.Dict perInfo = timeline.addDict();
                                             {
@@ -957,16 +513,15 @@ public class SpineCharacterDecoder {
                                                             deform[v] += vertices[v];
                                                     }
                                                     perInfo.addKeyValue("offset", start);
-
-                                                    if (frameIndex < frameCount - 1)
-                                                        readCurve(input, perInfo);
                                                 }
+                                                if (frameIndex < frameCount - 1)
+                                                    readCurve(input, perInfo);
                                                 JsonBuilder.List verticesValue = perInfo.addKeyList("vertices");
                                                 {
                                                     for (float v : deform)
                                                         verticesValue.addValue(v);
                                                 }
-                                                perDeform.insert(verticesValue);
+                                                perInfo.insert(verticesValue);
 
                                             }
                                             timeline.insert(perInfo);
@@ -1000,7 +555,7 @@ public class SpineCharacterDecoder {
                                     JsonBuilder.Dict offset = offsets.addDict();
                                     {
                                         int slotIndex = input.readInt(true);
-                                        offset.addKeyValue("slot", slotsName.get(slotIndex));
+                                        offset.addKeyValue("slot", data.slots.get(slotIndex).name);
                                         offset.addKeyValue("offset", input.readInt(true));
                                     }
                                     offsets.insert(offset);
@@ -1024,7 +579,7 @@ public class SpineCharacterDecoder {
                         JsonBuilder.Dict event = events.addDict();
                         {
                             event.addKeyValue("time", input.readFloat());
-                            event.addKeyValue("name", eventName.get(input.readInt(true)));
+                            event.addKeyValue("name", data.events.get(input.readInt(true)).name);
 
                             event.addKeyValue("int", input.readInt(false));
                             event.addKeyValue("float", input.readFloat());
@@ -1036,8 +591,10 @@ public class SpineCharacterDecoder {
                 animation.insert(events);
             }
 
-        } catch (Throwable ex) {
+        } catch (ZipException ex) {
             throw new SerializationException("Error reading skeleton file.", ex);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         Animations.insert(animation);
@@ -1058,5 +615,4 @@ public class SpineCharacterDecoder {
                 break;
         }
     }
-
 }
