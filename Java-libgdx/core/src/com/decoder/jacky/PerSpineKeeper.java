@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,8 +64,15 @@ public class PerSpineKeeper {
         boolean hasAtlas = false;
         if (!(!isAble && !savePath.isDirectory())) {
             if (atlasPath != null) {
-                atlasInfo = new TextureAtlas(atlasPath);
-                hasAtlas = true;
+                try {
+                    atlasInfo = new TextureAtlas(atlasPath);
+                    hasAtlas = true;
+                }catch (GdxRuntimeException e){
+                    e.printStackTrace();
+                    hasAtlas=false;
+                    atlasInfo=null;
+                }
+
 
                 String file_name = atlasPath.nameWithoutExtension().replace(".atlas", "");
                 output = Gdx.files.absolute(savePath + "/output/" + file_name + "/" + file_name + ".atlas");

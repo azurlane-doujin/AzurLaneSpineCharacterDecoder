@@ -40,7 +40,7 @@ public class JsonBuilder {
         }
 
         public void addKeyValue(String key, float value) {
-            builder.append(String.format("\"%s\":%.1f",key,value));
+            builder.append(String.format("\"%s\":%.1f,",key,value));
         }
 
         public void addKeyValue(String key, int value) {
